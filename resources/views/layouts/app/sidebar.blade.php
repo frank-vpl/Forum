@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+    <head>
+        @include('partials.head')
+    </head>
+    <body class="min-h-screen bg-white dark:bg-zinc-800 pb-16 lg:pb-0">
+        <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+            <flux:sidebar.header>
+                <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+                <flux:sidebar.collapse class="lg:hidden" />
+            </flux:sidebar.header>
+
+            <flux:sidebar.nav>
+                <flux:sidebar.group :heading="__('Platform')" class="grid">
+                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                        {{ __('Forum') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="document-text" :href="route('user.show', ['id' => auth()->id()])" :current="request()->routeIs('user.show')" wire:navigate>
+                        {{ __('My Posts') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>
+                        {{ __('Users') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="bell" :href="route('notifications.index')" :current="request()->routeIs('notifications.index')" wire:navigate>
+                        {{ __('Notifications') }}
+                        @php($notifCount = \App\Models\Notification::where('user_id', auth()->id())->whereNull('seen_at')->count())
+                        @if($notifCount > 0)
+                            <span class="ms-2 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-[10px] px-1.5 min-w-[18px] h-[18px]">{{ $notifCount }}</span>
+                        @endif
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
+            </flux:sidebar.nav>
+
+            <flux:spacer />
+
+            <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
+        </flux:sidebar>
+
+
+        <!-- Mobile User Menu -->
+        <flux:header class="lg:hidden">
+            <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
+
+            <flux:spacer />
+
+            <flux:dropdown position="top" align="end">
+                <flux:profile
+                    :initials="auth()->user()->initials()"
+                    :src="auth()->user()->profile_image_url ?? null"
+                    icon-trailing="chevron-down"
+                />
+
+                <flux:menu>
+                    <flux:menu.radio.group>
+                        <div class="p-0 text-sm font-normal">
+                            <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
+                                <flux:avatar
+                                    :name="auth()->user()->name"
+                                    :initials="auth()->user()->initials()"
+                                    :src="auth()->user()->profile_image_url ?? null"
+                                />
+
+                                <div class="grid flex-1 text-start text-sm leading-tight">
+                                    <flux:heading class="truncate flex items-center gap-1">
+                                        {{ auth()->user()->name }}
+                                        @if(auth()->user()->getBadgeIconPath())
+                                            <img 
+                                                src="{{ auth()->user()->getBadgeIconPath() }}" 
+                                                alt="{{ auth()->user()->getBadgeTooltip() }}" 
+                                                class="w-4 h-4" 
+                                                title="{{ auth()->user()->getBadgeTooltip() }}"
+                                            >
+                                        @endif
+                                    </flux:heading>
+                                    <flux:text class="truncate">{{ auth()->user()->email }}</flux:text>
+                                </div>
+                            </div>
+                        </div>
+                    </flux:menu.radio.group>
+
+                    <flux:menu.separator />
+
+                    <flux:menu.radio.group>
+                        <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>
+                            {{ __('Settings') }}
+                        </flux:menu.item>
+                    </flux:menu.radio.group>
+
+                    <flux:menu.separator />
+
+                    <form method="POST" action="{{ route('logout') }}" class="w-full">
+                        @csrf
+                        <flux:menu.item
+                            as="button"
+                            type="submit"
+                            icon="arrow-right-start-on-rectangle"
+                            class="w-full cursor-pointer"
+                            data-test="logout-button"
+                        >
+                            {{ __('Log Out') }}
+                        </flux:menu.item>
+                    </form>
+                </flux:menu>
+            </flux:dropdown>
+        </flux:header>
+
+        {{ $slot }}
+
+        <nav class="fixed bottom-0 inset-x-0 z-50 border-t border-zinc-200 bg-white/90 dark:border-zinc-700 dark:bg-zinc-900/90 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-zinc-900/60 lg:hidden">
+            <div class="mx-auto max-w-xl">
+                <div class="grid grid-cols-4">
+                    <a
+                        href="{{ route('dashboard') }}"
+                        wire:navigate
+                        class="flex flex-col items-center justify-center gap-1 py-2 {{ request()->routeIs('dashboard') ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-700 dark:text-zinc-200' }}"
+                    >
+                        <flux:icon name="home" class="w-6 h-6" />
+                        <span class="text-[11px] leading-tight">Forum</span>
+                    </a>
+                    <a
+                        href="{{ route('users.index') }}"
+                        wire:navigate
+                        class="flex flex-col items-center justify-center gap-1 py-2 {{ request()->routeIs('users.index') ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-700 dark:text-zinc-200' }}"
+                    >
+                        <flux:icon name="users" class="w-6 h-6" />
+                        <span class="text-[11px] leading-tight">Users</span>
+                    </a>
+                    <a
+                        href="{{ route('notifications.index') }}"
+                        wire:navigate
+                        class="flex flex-col items-center justify-center gap-1 py-2 {{ request()->routeIs('notifications.index') ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-700 dark:text-zinc-200' }}"
+                    >
+                        <div class="relative">
+                            <flux:icon name="bell" class="w-6 h-6" />
+                            @php($notifCount = \App\Models\Notification::where('user_id', auth()->id())->whereNull('seen_at')->count())
+                            @if($notifCount > 0)
+                                <span class="absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-[10px] px-1 min-w-[16px] h-[16px]">{{ $notifCount }}</span>
+                            @endif
+                        </div>
+                        <span class="text-[11px] leading-tight">Notifications</span>
+                    </a>
+                                        <a
+                        href="{{ route('user.show', ['id' => auth()->id()]) }}"
+                        wire:navigate
+                        class="flex flex-col items-center justify-center gap-1 py-2 {{
+                            (request()->routeIs('user.show') && ((int) request()->route('id') === (int) auth()->id()))
+                                ? 'text-blue-600 dark:text-blue-400'
+                                : 'text-zinc-700 dark:text-zinc-200'
+                        }}"
+                    >
+                        <flux:icon name="user" class="w-6 h-6" />
+                        <span class="text-[11px] leading-tight">Profile</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        @fluxScripts
+    </body>
+</html>

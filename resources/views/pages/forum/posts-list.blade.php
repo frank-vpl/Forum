@@ -27,7 +27,7 @@
                         @endif
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-1">
-                                <span class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $u?->name ?? 'Unknown' }}</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white truncate">{!! \App\Support\TextFilters::flagify($u?->name ?? 'Unknown') !!}</span>
                                 @if($u?->getBadgeIconPath())
                                     <img src="{{ $u->getBadgeIconPath() }}" alt="{{ $u->getBadgeTooltip() }}" class="w-4 h-4" title="{{ $u->getBadgeTooltip() }}">
                                 @endif
@@ -38,10 +38,10 @@
                     </div>
 
                     <a dir="auto" href="{{ url('/forum/'.$post->id) }}" class="block text-lg font-semibold text-gray-900 dark:text-white hover:underline mb-1">
-                        {{ \Illuminate\Support\Str::limit($post->title, 60) }}
+                        {!! \App\Support\TextFilters::flagify(\Illuminate\Support\Str::limit($post->title, 60)) !!}
                     </a>
                     <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                        {{ \Illuminate\Support\Str::limit(strip_tags($post->content), 45) }}
+                        {!! \App\Support\TextFilters::flagify(\Illuminate\Support\Str::limit(strip_tags($post->content), 45)) !!}
                     </p>
 
                     <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300">

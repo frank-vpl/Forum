@@ -19,7 +19,7 @@
                 to {{ $comment->parent_id ? ($comment->replyTo?->user?->name ?? 'user') : 'Post' }}
             </span>
         </div>
-        <div dir="auto" class="mt-1 text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{{ $comment->text }}</div>
+        <div dir="auto" class="mt-1 text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{!! \App\Support\TextFilters::flagify($comment->text) !!}</div>
         <div class="mt-2 flex items-center gap-3">
             @auth
                 <button

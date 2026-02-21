@@ -3,10 +3,10 @@
 namespace App\Livewire\Pages;
 
 use App\Models\Comment;
+use App\Models\Notification;
 use App\Models\Post;
 use App\Models\PostLike;
 use App\Models\PostView;
-use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 

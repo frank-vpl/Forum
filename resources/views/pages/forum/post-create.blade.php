@@ -40,6 +40,7 @@
         .editor-preview, .editor-preview-side { font-size: 0.95rem; line-height: 1.75; color: rgb(55 65 81); }
         .dark .editor-preview, .dark .editor-preview-side { color: rgb(229 231 235); background-color: #1f2937; }
         .editor-preview [dir="rtl"], .editor-preview-side [dir="rtl"] { text-align: right; }
+        .editor-preview .emoji-flag, .editor-preview-side .emoji-flag { display: inline !important; height: 1em; width: auto; vertical-align: -0.2em; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; }
         /* Dark mode for CodeMirror editor */
         .dark .CodeMirror { background-color: #111827; color: #e5e7eb; border-color: #374151; }
         .dark .CodeMirror-cursor { border-left: 1px solid #e5e7eb; }
@@ -82,6 +83,9 @@
             const ta = document.getElementById('markdown-editor');
             if (!ta) return;
             if (ta._mde) return;
+            const FLAG = '🇮🇷';
+            const IMG_URL = '{{ asset('iran.png') }}';
+            const IMG_HTML = `<img src="${IMG_URL}" alt="${FLAG}" style="height:1em;width:auto;vertical-align:-0.2em" class="emoji-flag emoji-flag-ir">`;
             if (window.marked) {
                 const renderer = new marked.Renderer();
                 const rtlRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
@@ -145,7 +149,8 @@
                 status: false,
                 previewRender: function(text) {
                     try {
-                        return DOMPurify.sanitize(marked.parse(text));
+                        const dirty = String(text ?? '').replaceAll(FLAG, IMG_HTML);
+                        return DOMPurify.sanitize(marked.parse(dirty));
                     } catch (e) {
                         return text;
                     }

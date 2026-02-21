@@ -17,7 +17,7 @@ class PostsList extends Component
         $posts = Post::with('user')
             ->withCount(['likes', 'views', 'comments'])
             ->orderByDesc('created_at')
-            ->paginate(10);
+            ->paginate(12);
 
         $likedPostIds = [];
         if (Auth::check()) {

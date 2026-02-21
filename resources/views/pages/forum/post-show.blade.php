@@ -128,11 +128,15 @@
             #post-content table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
             #post-content th, #post-content td { border: 1px solid rgb(229 231 235); padding: 0.5rem; }
             .dark #post-content th, .dark #post-content td { border-color: rgb(75 85 99); }
+            #post-content .emoji-flag { display: inline !important; margin: 0 !important; border: 0 !important; border-radius: 0 !important; }
         </style>
         <script>
             function renderMarkdown() {
                 const el = document.getElementById('post-content');
                 if (!el) return;
+                const FLAG = '🇮🇷';
+                const IMG_URL = '{{ asset('iran.png') }}';
+                const IMG_HTML = `<img src="${IMG_URL}" alt="${FLAG}" style="height:1em;width:auto;vertical-align:-0.2em" class="emoji-flag emoji-flag-ir">`;
                 if (window.marked) {
                     const renderer = new marked.Renderer();
                     const rtlRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
@@ -190,7 +194,8 @@
                     marked.setOptions({ gfm: true, breaks: true, renderer });
                 }
                 const raw = @json($post->content);
-                const html = DOMPurify.sanitize(marked.parse(raw));
+                const dirty = String(raw ?? '').replaceAll(FLAG, IMG_HTML);
+                const html = DOMPurify.sanitize(marked.parse(dirty));
                 el.innerHTML = html;
             }
 

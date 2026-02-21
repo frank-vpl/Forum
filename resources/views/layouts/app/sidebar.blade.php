@@ -155,6 +155,67 @@
             </div>
         </nav>
 
+        <style>
+        .emoji-flag{display:inline !important;height:1em;width:auto;vertical-align:-0.2em;margin:0 !important;padding:0 !important;border:0 !important;border-radius:0 !important}
+        </style>
+        <script>
+        (() => {
+            const FLAG = '🇮🇷';
+            const IMG_URL = '{{ asset('iran.png') }}';
+            const SKIP_TAGS = new Set(['SCRIPT','STYLE','CODE','PRE','NOSCRIPT','TEXTAREA']);
+            let scheduled = false;
+            function replaceInNode(node) {
+                const text = node.nodeValue;
+                if (!text || text.indexOf(FLAG) === -1) return;
+                const parts = text.split(FLAG);
+                if (parts.length === 1) return;
+                const frag = document.createDocumentFragment();
+                for (let i = 0; i < parts.length; i++) {
+                    if (parts[i]) frag.appendChild(document.createTextNode(parts[i]));
+                    if (i < parts.length - 1) {
+                        const img = document.createElement('img');
+                        img.src = IMG_URL;
+                        img.alt = FLAG;
+                        img.style.height = '1em';
+                        img.style.width = 'auto';
+                        img.style.verticalAlign = '-0.2em';
+                        img.className = 'emoji-flag emoji-flag-ir';
+                        frag.appendChild(img);
+                    }
+                }
+                node.parentNode && node.parentNode.replaceChild(frag, node);
+            }
+            function run(root) {
+                if (!root) return;
+                const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+                    acceptNode(n) {
+                        const p = n.parentNode;
+                        if (!p || SKIP_TAGS.has(p.nodeName)) return NodeFilter.FILTER_REJECT;
+                        return n.nodeValue && n.nodeValue.indexOf(FLAG) !== -1
+                            ? NodeFilter.FILTER_ACCEPT
+                            : NodeFilter.FILTER_SKIP;
+                    }
+                });
+                let node;
+                const targets = [];
+                while ((node = walker.nextNode())) targets.push(node);
+                for (const n of targets) replaceInNode(n);
+            }
+            const init = () => run(document.body);
+            document.addEventListener('DOMContentLoaded', init);
+            document.addEventListener('livewire:navigated', init);
+            const obs = new MutationObserver(() => {
+                if (scheduled) return;
+                scheduled = true;
+                requestAnimationFrame(() => {
+                    scheduled = false;
+                    run(document.body);
+                });
+            });
+            obs.observe(document.documentElement, { childList: true, subtree: true });
+        })();
+        </script>
+
         @fluxScripts
     </body>
 </html>

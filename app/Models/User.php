@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'status',
         'profile_image',
+        'post_filter',
     ];
 
     /**
@@ -50,6 +51,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'profile_image' => 'string',
+            'post_filter' => 'string',
         ];
     }
 

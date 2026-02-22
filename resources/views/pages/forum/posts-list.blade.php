@@ -1,8 +1,40 @@
 <div>
-    <div class="mb-6 flex items-center justify-between">
+    <div class="mb-6 flex items-center justify-between gap-3">
         <div>
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">Forum Posts</h1>
             <p class="text-gray-600 dark:text-gray-400">Latest discussions from the community</p>
+            <div class="mt-2 flex items-center gap-2 flex-wrap">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Filter:</span>
+                <select wire:model.live="filter" class="rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white px-2.5 py-1.5 sm:hidden">
+                    <option value="news">News</option>
+                    <option value="most_likes">Most Likes</option>
+                    <option value="most_views">Most Views</option>
+                    <option value="verified_users">Verified Users</option>
+                    <option value="admin_posts">Admin Posts</option>
+                </select>
+                <div class="hidden sm:inline-flex rounded-lg border border-gray-300 dark:border-gray-700 overflow-hidden">
+                    <button type="button" wire:click="$set('filter','news')"
+                        class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'news' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                        News
+                    </button>
+                    <button type="button" wire:click="$set('filter','most_likes')"
+                        class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'most_likes' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                        Most Likes
+                    </button>
+                    <button type="button" wire:click="$set('filter','most_views')"
+                        class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'most_views' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                        Most Views
+                    </button>
+                    <button type="button" wire:click="$set('filter','verified_users')"
+                        class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'verified_users' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                        Verified Users
+                    </button>
+                    <button type="button" wire:click="$set('filter','admin_posts')"
+                        class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'admin_posts' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                        Admin Posts
+                    </button>
+                </div>
+            </div>
         </div>
         <a href="{{ url('/new') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

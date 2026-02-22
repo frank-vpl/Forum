@@ -43,4 +43,7 @@ Route::get('/users', function () {
     return view('pages.users.users-list-container');
 })->name('users.index');
 
+// Premium
+Route::view('/premium', 'pages.premium-container')->name('premium.index');
+
 require __DIR__.'/settings.php';

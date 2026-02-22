@@ -35,9 +35,23 @@
                             <span class="ms-2 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-[10px] px-1.5 min-w-[18px] h-[18px]">{{ $notifCount }}</span>
                         @endif
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="star" :href="route('premium.index')" :current="request()->routeIs('premium.index')" wire:navigate class="rounded-md bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100">
+                        {{ __('Premium') }}
+                    </flux:sidebar.item>
+                    @if(in_array(auth()->user()->status, ['admin','verified']))
+                        <div class="ms-8 mt-1 inline-flex items-center gap-1 rounded-md bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100 px-2 py-1 text-xs">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 17l-5 3 1.5-5.5L4 10l5.5-.5L12 4l2.5 5.5L20 10l-4.5 4.5L17 20z" />
+                            </svg>
+                            <span>You are Premium</span>
+                        </div>
+                    @endif
                     @else
                     <flux:sidebar.item icon="bell" :href="route('login')" wire:navigate>
                         {{ __('Notifications') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="star" :href="route('premium.index')" wire:navigate class="rounded-md bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100">
+                        {{ __('Premium') }}
                     </flux:sidebar.item>
                     @endauth
                 </flux:sidebar.group>
@@ -102,6 +116,15 @@
                     <flux:menu.separator />
 
                     <flux:menu.radio.group>
+                                @if(in_array(auth()->user()->status, ['admin','verified']))
+                                    <flux:menu.item icon="star" class="rounded-md bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100 cursor-default">
+                                        You are Premium
+                                    </flux:menu.item>
+                                @else
+                                    <flux:menu.item :href="route('premium.index')" icon="star" wire:navigate class="rounded-md bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100">
+                                        Buy Premium
+                                    </flux:menu.item>
+                                @endif
                         <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>
                             {{ __('Settings') }}
                         </flux:menu.item>
@@ -116,6 +139,7 @@
                             type="submit"
                             icon="arrow-right-start-on-rectangle"
                             class="w-full cursor-pointer"
+                            onclick="if(!confirm('Are you sure you want to log out?')){ event.preventDefault(); return false; }"
                             data-test="logout-button"
                         >
                             {{ __('Log Out') }}
@@ -134,7 +158,7 @@
 
         <nav class="fixed bottom-0 inset-x-0 z-50 border-t border-zinc-200 bg-white/90 dark:border-zinc-700 dark:bg-zinc-900/90 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-zinc-900/60 lg:hidden">
             <div class="mx-auto max-w-xl">
-                <div class="grid grid-cols-4">
+                <div class="grid grid-cols-5">
                     <a
                         href="{{ route('dashboard') }}"
                         wire:navigate
@@ -151,6 +175,26 @@
                         <flux:icon name="users" class="w-6 h-6" />
                         <span class="text-[11px] leading-tight">Users</span>
                     </a>
+                    @auth
+                    <a
+                        href="{{ route('forum.new') }}"
+                        wire:navigate
+                        class="flex items-center justify-center py-2"
+                    >
+                        <span class="relative -top-3 inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 text-white shadow-lg">
+                            <flux:icon name="plus" class="w-6 h-6" />
+                        </span>
+                    </a>
+                    @else
+                    <a
+                        href="{{ route('login') }}"
+                        class="flex items-center justify-center py-2"
+                    >
+                        <span class="relative -top-3 inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 text-white shadow-lg">
+                            <flux:icon name="plus" class="w-6 h-6" />
+                        </span>
+                    </a>
+                    @endauth
                     @auth
                     <a
                         href="{{ route('notifications.index') }}"

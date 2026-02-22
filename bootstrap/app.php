@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'not.banned' => \App\Http\Middleware\EnsureUserIsNotBanned::class,
         ]);
+        $middleware->appendToGroup('web', \App\Http\Middleware\PersistAuthRedirect::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

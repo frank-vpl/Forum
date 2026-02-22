@@ -20,7 +20,7 @@
                         {{ __('My Posts') }}
                     </flux:sidebar.item>
                     @else
-                    <flux:sidebar.item icon="document-text" :href="route('login')" wire:navigate>
+                    <flux:sidebar.item icon="document-text" :href="route('login', ['redirect' => ltrim(route('dashboard', absolute: false), '/')])" wire:navigate>
                         {{ __('My Posts') }}
                     </flux:sidebar.item>
                     @endauth
@@ -39,7 +39,7 @@
                         {{ __('Premium') }}
                     </flux:sidebar.item>
                     @else
-                    <flux:sidebar.item icon="bell" :href="route('login')" wire:navigate>
+                    <flux:sidebar.item icon="bell" :href="route('login', ['redirect' => ltrim(route('notifications.index', absolute: false), '/')])" wire:navigate>
                         {{ __('Notifications') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="star" :href="route('premium.index')" wire:navigate class="rounded-md bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100">
@@ -70,7 +70,7 @@
                 <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
             @else
                 <div class="hidden lg:flex items-center p-4">
-                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3.5 py-2 text-white text-sm hover:bg-blue-700">
+                    <a href="{{ !request()->route() ? route('login', ['redirect' => ltrim(route('dashboard', absolute: false), '/')]) : (trim(request()->getPathInfo(), '/') === '' ? route('login') : route('login', ['redirect' => ltrim(request()->getRequestUri(), '/')])) }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3.5 py-2 text-white text-sm hover:bg-blue-700">
                         {{ __('Log in') }}
                     </a>
                 </div>
@@ -155,7 +155,7 @@
                 </flux:menu>
             </flux:dropdown>
             @else
-            <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3.5 py-2 text-white text-sm hover:bg-blue-700">
+            <a href="{{ !request()->route() ? route('login', ['redirect' => ltrim(route('dashboard', absolute: false), '/')]) : (trim(request()->getPathInfo(), '/') === '' ? route('login') : route('login', ['redirect' => ltrim(request()->getRequestUri(), '/')])) }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3.5 py-2 text-white text-sm hover:bg-blue-700">
                 {{ __('Log in') }}
             </a>
             @endauth
@@ -193,7 +193,7 @@
                     </a>
                     @else
                     <a
-                        href="{{ route('login') }}"
+                        href="{{ route('login', ['redirect' => ltrim(route('forum.new', absolute: false), '/')]) }}"
                         class="flex items-center justify-center py-2"
                     >
                         <span class="relative -top-3 inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 text-white shadow-lg">
@@ -230,14 +230,14 @@
                     </a>
                     @else
                     <a
-                        href="{{ route('login') }}"
+                        href="{{ route('login', ['redirect' => ltrim(route('notifications.index', absolute: false), '/')]) }}"
                         class="flex flex-col items-center justify-center gap-1 py-2 text-zinc-700 dark:text-zinc-200"
                     >
                         <flux:icon name="bell" class="w-6 h-6" />
                         <span class="text-[11px] leading-tight">Notifications</span>
                     </a>
                     <a
-                        href="{{ route('login') }}"
+                        href="{{ route('login', ['redirect' => ltrim(route('dashboard', absolute: false), '/')]) }}"
                         class="flex flex-col items-center justify-center gap-1 py-2 text-zinc-700 dark:text-zinc-200"
                     >
                         <flux:icon name="user" class="w-6 h-6" />

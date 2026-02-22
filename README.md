@@ -69,8 +69,6 @@ On Windows (PowerShell):
 copy .env.example .env
 ```
 
-Helpful: APP_NAME supports quotes when the name has spaces.
-
 - Generate application key (sets APP_KEY in .env):
 
 ```bash
@@ -85,6 +83,8 @@ Set each variable with short tips. See DB and Email “code cards” followed by
 ```bash
 APP_NAME="IranGuard Forum"
 ```
+
+Helpful: APP_NAME supports quotes when the name has spaces.
 
 - Environment:
 

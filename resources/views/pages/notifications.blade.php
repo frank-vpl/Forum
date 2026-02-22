@@ -10,7 +10,10 @@
         @forelse($items as $n)
             @php($actor = $n->actor)
             <div class="flex items-start gap-4 py-3">
-                @if($actor?->profile_image_url)
+                @php($isSystem = in_array($n->type, ['status_to_verified','status_to_user','status_to_banned','status_unbanned','status_to_admin','post_admin_edited','post_admin_deleted'], true))
+                @if($isSystem)
+                    <img src="{{ asset('logo.svg') }}" alt="System" class="w-12 h-12 rounded-full object-contain border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
+                @elseif($actor?->profile_image_url)
                     <a href="{{ route('user.show', ['id' => $actor->id]) }}" wire:navigate>
                         <img src="{{ $actor->profile_image_url }}" alt="{{ $actor->name }}" class="w-12 h-12 rounded-full object-cover border border-gray-200 dark:border-gray-700">
                     </a>
@@ -22,19 +25,19 @@
                             </div>
                         </a>
                     @else
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-sm font-semibold text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700">
-                            {{ 'U' }}
-                        </div>
+                        <img src="{{ asset('logo.svg') }}" alt="System" class="w-12 h-12 rounded-full object-contain border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
                     @endif
                 @endif
                 <div class="flex-1">
                     <div class="flex items-center gap-2 text-base">
-                        @if($actor)
+                        @if($isSystem)
+                            <span class="font-semibold text-gray-900 dark:text-white">System</span>
+                        @elseif($actor)
                             <a href="{{ route('user.show', ['id' => $actor->id]) }}" wire:navigate class="font-semibold text-gray-900 dark:text-white">
                                 {{ $actor->name }}
                             </a>
                         @else
-                            <span class="font-semibold text-gray-900 dark:text-white">User</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">System</span>
                         @endif
                         <span class="text-gray-500 dark:text-gray-400">•</span>
                         <span class="text-gray-500 dark:text-gray-400 text-sm">{{ $n->created_at?->diffForHumans() }}</span>
@@ -46,6 +49,23 @@
                             <span class="font-medium">commented on your post</span>
                         @elseif($n->type === 'comment_reply')
                             <span class="font-medium">replied to your comment</span>
+                        @elseif($n->type === 'status_to_verified')
+                            <span class="font-medium">Your account status changed to Verified</span>
+                        @elseif($n->type === 'status_to_user')
+                            <span class="font-medium">Your account status changed to User</span>
+                        @elseif($n->type === 'status_to_banned')
+                            <span class="font-medium text-red-600 dark:text-red-400">Your account has been banned</span>
+                        @elseif($n->type === 'status_unbanned')
+                            <span class="font-medium">Your account has been unbanned</span>
+                        @elseif($n->type === 'status_to_admin')
+                            <span class="font-medium">You have been granted Admin</span>
+                        @elseif($n->type === 'post_admin_edited')
+                            <span class="font-medium">Your post was updated by Admin</span>
+                        @elseif($n->type === 'post_admin_deleted')
+                            <span class="font-medium">Your post was removed by Admin</span>
+                            @if(!$n->post && $n->post_id)
+                                <span class="text-gray-600 dark:text-gray-400">(Post #{{ $n->post_id }})</span>
+                            @endif
                         @else
                             <span class="font-medium">activity</span>
                         @endif

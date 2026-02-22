@@ -32,10 +32,10 @@
                         {{ __('Notifications') }}
                         @php($notifCount = \App\Models\Notification::where('user_id', auth()->id())->whereNull('seen_at')->count())
                         @if($notifCount > 0)
-                            <span class="ms-2 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-[10px] px-1.5 min-w-[18px] h-[18px]">{{ $notifCount }}</span>
+                            <span class="ms-2 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-[10px] px-1.5 min-w-[18px] h-[18px]">{{ $notifCount >= 100 ? '+99' : $notifCount }}</span>
                         @endif
                     </flux:sidebar.item>
-                    <flux:sidebar.item icon="star" :href="route('premium.index')" :current="request()->routeIs('premium.index')" wire:navigate class="rounded-md bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100">
+                    <flux:sidebar.item icon="star" :href="route('premium.index')" :current="request()->routeIs('premium.index')" wire:navigate>
                         {{ __('Premium') }}
                     </flux:sidebar.item>
                     @else
@@ -211,7 +211,7 @@
                             <flux:icon name="bell" class="w-6 h-6" />
                             @php($notifCount = \App\Models\Notification::where('user_id', auth()->id())->whereNull('seen_at')->count())
                             @if($notifCount > 0)
-                                <span class="absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-[10px] px-1 min-w-[16px] h-[16px]">{{ $notifCount }}</span>
+                                <span class="absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-[10px] px-1 min-w-[16px] h-[16px]">{{ $notifCount >= 100 ? '+99' : $notifCount }}</span>
                             @endif
                         </div>
                         <span class="text-[11px] leading-tight">Notifications</span>

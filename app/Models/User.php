@@ -26,6 +26,9 @@ class User extends Authenticatable
         'status',
         'profile_image',
         'post_filter',
+        'bio',
+        'profile_url',
+        'profile_link_title',
     ];
 
     /**
@@ -52,6 +55,9 @@ class User extends Authenticatable
             'password' => 'hashed',
             'profile_image' => 'string',
             'post_filter' => 'string',
+            'bio' => 'string',
+            'profile_url' => 'string',
+            'profile_link_title' => 'string',
         ];
     }
 

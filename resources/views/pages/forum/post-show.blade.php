@@ -8,7 +8,7 @@
                     <h1 dir="auto" class="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ $post->title }}</h1>
                     <div class="flex items-center gap-2 md:mt-1 shrink-0">
                         @auth
-                            @if(auth()->id() === ($u?->id))
+                            @if(auth()->check() && (auth()->id() === ($u?->id) || auth()->user()->isAdmin()))
                                 <a href="{{ url('/new?id='.$post->id) }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3.5 py-2 text-white text-sm hover:bg-blue-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a1.5 1.5 0 0 1 2.121 2.121l-9.9 9.9L6 16l.492-3.083 10.37-9.43zM19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h6" />
@@ -62,24 +62,33 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs {{ $liked ? 'text-red-600' : 'text-gray-700 dark:text-gray-300' }}">
+                        @auth
+                        <button type="button" wire:click="toggleLike" class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs {{ $liked ? 'text-red-600' : 'text-gray-700 dark:text-gray-300' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
                             </svg>
-                            {{ $likesCount }}
+                            {{ $this->formatCount($likesCount) }}
+                        </button>
+                        @else
+                        <span class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs {{ $liked ? 'text-red-600' : 'text-gray-700 dark:text-gray-300' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
+                            </svg>
+                            {{ $this->formatCount($likesCount) }}
                         </span>
+                        @endauth
                         <span class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs text-gray-700 dark:text-gray-300">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s4.5-7.5 9.75-7.5S21.75 12 21.75 12s-4.5 7.5-9.75 7.5S2.25 12 2.25 12z" />
                                 <circle cx="12" cy="12" r="3.25" />
                             </svg>
-                            {{ $viewsCount }}
+                            {{ $this->formatCount($viewsCount) }}
                         </span>
                         <span class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs text-gray-700 dark:text-gray-300">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h7M4 5h16a1 1 0 0 1 1 1v12l-3-3H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" />
                             </svg>
-                            {{ $commentsCount }}
+                            {{ $this->formatCount($commentsCount) }}
                         </span>
                     </div>
                 </div>

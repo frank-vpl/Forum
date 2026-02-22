@@ -22,7 +22,28 @@
     <!-- Users Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         @forelse($users as $user)
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-lg">
+            <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-lg">
+                @auth
+                    @if(auth()->user()->isAdmin() && auth()->id() !== $user->id)
+                        <div class="absolute top-3 right-3 z-30">
+                            @if($user->status === 'admin')
+                                <span class="inline-flex items-center rounded-md bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100 text-xs px-2 py-1">Admin</span>
+                            @else
+                                <select
+                                    class="text-xs rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-1 shadow-sm"
+                                    data-prev="{{ $user->status }}"
+                                    onchange="(function(sel){const prev=sel.dataset.prev; const val=sel.value; let msg='Change status to '+val.charAt(0).toUpperCase()+val.slice(1)+'?'; if(val==='banned'){ msg='Change status to Banned? The user will be logged out and blocked.';} if(val==='admin'){ msg='Grant Admin role to this user?'; } if(!confirm(msg)){ sel.value=prev; return;} const compEl=sel.closest('[wire\\:id]'); if(compEl&&window.Livewire){ const comp=window.Livewire.find(compEl.getAttribute('wire:id')); comp && comp.call('updateStatus', {{ $user->id }}, val); sel.dataset.prev=val; }})(this)"
+                                    aria-label="Change user status"
+                                >
+                                    <option value="user" {{ $user->status === 'user' ? 'selected' : '' }}>User</option>
+                                    <option value="verified" {{ $user->status === 'verified' ? 'selected' : '' }}>Verified</option>
+                                    <option value="banned" {{ $user->status === 'banned' ? 'selected' : '' }}>Banned</option>
+                                    <option value="admin" {{ $user->status === 'admin' ? 'selected' : '' }}>Admin</option>
+                                </select>
+                            @endif
+                        </div>
+                    @endif
+                @endauth
                 <div class="p-6">
                     <div class="flex flex-col items-center text-center">
                         <!-- Avatar with profile image or initials -->

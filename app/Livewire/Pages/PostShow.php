@@ -34,6 +34,9 @@ class PostShow extends Component
     private function loadPost(): void
     {
         $this->post = Post::with('user')->withCount(['likes', 'views', 'comments'])->findOrFail($this->postId);
+        if ($this->post?->user?->isBanned()) {
+            abort(404);
+        }
         $this->likesCount = (int) ($this->post->likes_count ?? 0);
         $this->viewsCount = (int) ($this->post->views_count ?? 0);
         $this->commentsCount = (int) ($this->post->comments_count ?? 0);
@@ -113,14 +116,49 @@ class PostShow extends Component
         $this->commentsCount = Comment::where('post_id', $this->postId)->count();
     }
 
+    public function formatCount(int $n): string
+    {
+        if ($n < 1000) {
+            return (string) $n;
+        }
+        if ($n < 1000000) {
+            $v = round($n / 1000, 1);
+            $s = rtrim(rtrim(number_format($v, 1, '.', ''), '0'), '.');
+            return $s.'k';
+        }
+        if ($n < 1000000000) {
+            $v = round($n / 1000000, 1);
+            $s = rtrim(rtrim(number_format($v, 1, '.', ''), '0'), '.');
+            return $s.'M';
+        }
+        if ($n >= 1000000000000) {
+            return '+999B';
+        }
+        $v = round($n / 1000000000, 1);
+        $s = rtrim(rtrim(number_format($v, 1, '.', ''), '0'), '.');
+        return $s.'B';
+    }
+
     public function deletePost(): void
     {
         if (! Auth::check()) {
             return;
         }
         $post = Post::find($this->postId);
-        if (! $post || $post->user_id !== Auth::id()) {
+        if (! $post) {
             return;
+        }
+        $isAdmin = Auth::user()?->isAdmin();
+        if (! $isAdmin && $post->user_id !== Auth::id()) {
+            return;
+        }
+        if ($isAdmin && $post->user_id !== Auth::id()) {
+            \App\Models\Notification::create([
+                'user_id' => $post->user_id,
+                'actor_id' => Auth::id(),
+                'type' => 'post_admin_deleted',
+                'post_id' => $post->id,
+            ]);
         }
         $post->delete();
         $this->redirect(url('/dashboard'), navigate: true);

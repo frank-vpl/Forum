@@ -20,7 +20,11 @@ class PostCreate extends Component
     {
         $this->postId = $postId;
         if ($this->postId) {
-            $post = Post::where('id', $this->postId)->where('user_id', Auth::id())->first();
+            $query = Post::where('id', $this->postId);
+            if (! (Auth::user()?->isAdmin())) {
+                $query->where('user_id', Auth::id());
+            }
+            $post = $query->first();
             if (! $post) {
                 $this->redirect(url('/forum/'.$this->postId), navigate: true);
 
@@ -41,12 +45,24 @@ class PostCreate extends Component
         ]);
 
         if ($this->postId) {
-            $post = Post::where('id', $this->postId)->where('user_id', Auth::id())->firstOrFail();
+            $query = Post::where('id', $this->postId);
+            if (! (Auth::user()?->isAdmin())) {
+                $query->where('user_id', Auth::id());
+            }
+            $post = $query->firstOrFail();
             $post->update([
                 'title' => trim($this->title),
                 'category' => trim($this->category),
                 'content' => $this->content,
             ]);
+            if ((Auth::user()?->isAdmin()) && $post->user_id !== Auth::id()) {
+                \App\Models\Notification::create([
+                    'user_id' => $post->user_id,
+                    'actor_id' => Auth::id(),
+                    'type' => 'post_admin_edited',
+                    'post_id' => $post->id,
+                ]);
+            }
         } else {
             $post = Post::create([
                 'user_id' => Auth::id(),

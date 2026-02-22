@@ -14,6 +14,9 @@ new class extends Component {
 
     public string $name = '';
     public string $email = '';
+    public ?string $bio = null;
+    public ?string $profile_url = null;
+    public ?string $profile_link_title = null;
 
     /**
      * Mount the component.
@@ -22,6 +25,9 @@ new class extends Component {
     {
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
+        $this->bio = Auth::user()->bio;
+        $this->profile_url = Auth::user()->profile_url;
+        $this->profile_link_title = Auth::user()->profile_link_title;
     }
 
     /**
@@ -81,7 +87,7 @@ new class extends Component {
 
     <flux:heading class="sr-only">{{ __('Profile Settings') }}</flux:heading>
 
-    <x-pages::settings.layout :heading="__('Profile')" :subheading="__('Update your name and email address')">
+    <x-pages::settings.layout :heading="__('Profile')" :subheading="__('Update your profile information')">
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
             <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
 
@@ -105,6 +111,35 @@ new class extends Component {
                         @endif
                     </div>
                 @endif
+            </div>
+
+            <div class="space-y-2">
+                <flux:label>{{ __('Bio') }}</flux:label>
+                <textarea
+                    wire:model="bio"
+                    dir="auto"
+                    rows="3"
+                    class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    placeholder="{{ __('Tell people about yourself') }}"
+                ></textarea>
+                @error('bio')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <flux:input wire:model="profile_url" :label="__('Profile URL')" type="url" placeholder="https://t.me/h3dev" />
+                    @error('profile_url')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <flux:input wire:model="profile_link_title" :label="__('Profile Link Title')" type="text" placeholder="{{ __('e.g. Telegram') }}" />
+                    @error('profile_link_title')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
 
             <!-- Profile Image Section -->

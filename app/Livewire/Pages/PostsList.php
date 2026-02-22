@@ -31,6 +31,7 @@ class PostsList extends Component
     public function render()
     {
         $query = Post::with('user')
+            ->whereHas('user', fn ($q) => $q->where('status', '!=', 'banned'))
             ->withCount(['likes', 'views', 'comments']);
 
         switch ($this->filter) {

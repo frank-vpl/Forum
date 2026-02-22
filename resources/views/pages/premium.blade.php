@@ -17,25 +17,7 @@
             <p class="text-gray-600 dark:text-gray-300 mb-6">Lifetime verification for only <span class="font-semibold">$2</span>. Pay with crypto and get premium visibility.</p>
 
             <div class="grid md:grid-cols-2 gap-6 mb-8">
-                <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-5 bg-white dark:bg-gray-800">
-                    <div class="text-3xl font-bold text-gray-900 dark:text-white">$2</div>
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Lifetime</div>
-                    <div class="mt-4">
-                        <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Buy via</div>
-                        <div class="grid grid-cols-1 gap-2">
-                            <a href="https://t.me/h3dev" class="inline-flex items-center justify-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-white hover:bg-sky-700">
-                                Telegram
-                            </a>
-                            <a href="mailto:h3dev.pira@gmail.com" class="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
-                                Email
-                            </a>
-                            <a href="https://x.com/albert_com32388" class="inline-flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-2 text-white hover:bg-zinc-900">
-                                X (Twitter)
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-5 bg-white dark:bg-gray-800">
+                                <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-5 bg-white dark:bg-gray-800">
                     <div class="font-semibold text-gray-900 dark:text-white mb-2">Includes</div>
                     <ul class="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                         <li class="flex items-center gap-2">
@@ -57,6 +39,24 @@
                             Verified posts highlighted on Forum
                         </li>
                     </ul>
+                </div>
+                <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-5 bg-white dark:bg-gray-800">
+                    <div class="text-3xl font-bold text-gray-900 dark:text-white">$2</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Lifetime</div>
+                    <div class="mt-4">
+                        <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Buy via</div>
+                        <div class="grid grid-cols-1 gap-2">
+                            <a href="https://t.me/h3dev" class="inline-flex items-center justify-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-white hover:bg-sky-700">
+                                Telegram
+                            </a>
+                            <a href="mailto:h3dev.pira@gmail.com" class="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
+                                Email
+                            </a>
+                            <a href="https://x.com/albert_com32388" class="inline-flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-2 text-white hover:bg-zinc-900">
+                                X (Twitter)
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
 

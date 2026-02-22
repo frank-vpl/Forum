@@ -6,32 +6,32 @@
             <div class="mt-2 flex items-center gap-2 flex-wrap">
                 <span class="text-sm text-gray-600 dark:text-gray-400">Filter:</span>
                 <select wire:model.live="filter" class="rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white px-2.5 py-1.5 sm:hidden">
-                    <option value="news">News</option>
-                    <option value="most_likes">Most Likes</option>
-                    <option value="most_views">Most Views</option>
-                    <option value="verified_users">Verified Users</option>
-                    <option value="admin_posts">Admin Posts</option>
+                    <option value="news">Latest</option>
+                    <option value="most_likes">Popular</option>
+                    <option value="most_views">Trending</option>
+                    <option value="verified_users">Verified</option>
+                    <option value="admin_posts">Official</option>
                 </select>
                 <div class="hidden sm:inline-flex rounded-lg border border-gray-300 dark:border-gray-700 overflow-hidden">
                     <button type="button" wire:click="$set('filter','news')"
                         class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'news' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                        News
+                        Latest
                     </button>
                     <button type="button" wire:click="$set('filter','most_likes')"
                         class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'most_likes' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                        Most Likes
+                        Popular
                     </button>
                     <button type="button" wire:click="$set('filter','most_views')"
                         class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'most_views' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                        Most Views
+                        Trending
                     </button>
                     <button type="button" wire:click="$set('filter','verified_users')"
                         class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'verified_users' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                        Verified Users
+                        Verified
                     </button>
                     <button type="button" wire:click="$set('filter','admin_posts')"
                         class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'admin_posts' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                        Admin Posts
+                        Official
                     </button>
                 </div>
             </div>

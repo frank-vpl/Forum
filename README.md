@@ -212,7 +212,7 @@ php artisan serve
 
 <div align="center">
   <br />
-  <img src="./public/iran.png" alt="Iran" width="20" height="20" style="vertical-align:middle;margin-right:8px;" />
+  <img src="./public/iran.png" alt="Iran" width="24" height="24" style="vertical-align:middle;margin-right:8px;" />
   <strong>Made with ❤️ by Hossein Pira</strong>
   <br />
   <a href="https://t.me/h3dev">Telegram</a>

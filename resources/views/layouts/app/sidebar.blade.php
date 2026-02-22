@@ -38,14 +38,6 @@
                     <flux:sidebar.item icon="star" :href="route('premium.index')" :current="request()->routeIs('premium.index')" wire:navigate class="rounded-md bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100">
                         {{ __('Premium') }}
                     </flux:sidebar.item>
-                    @if(in_array(auth()->user()->status, ['admin','verified']))
-                        <div class="ms-8 mt-1 inline-flex items-center gap-1 rounded-md bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100 px-2 py-1 text-xs">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 17l-5 3 1.5-5.5L4 10l5.5-.5L12 4l2.5 5.5L20 10l-4.5 4.5L17 20z" />
-                            </svg>
-                            <span>You are Premium</span>
-                        </div>
-                    @endif
                     @else
                     <flux:sidebar.item icon="bell" :href="route('login')" wire:navigate>
                         {{ __('Notifications') }}
@@ -54,6 +46,21 @@
                         {{ __('Premium') }}
                     </flux:sidebar.item>
                     @endauth
+                    <div class="px-3 pt-3">
+                        <div class="mb-1 text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                            {{ __('Appearance') }}
+                        </div>
+                        <div x-data>
+                            <select
+                                x-model="$flux.appearance"
+                                class="w-full rounded-lg border border-zinc-200 bg-white px-2.5 py-2 text-sm text-zinc-900 shadow-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                            >
+                                <option value="light">{{ __('Light') }}</option>
+                                <option value="dark">{{ __('Dark') }}</option>
+                                <option value="system">{{ __('System') }}</option>
+                            </select>
+                        </div>
+                    </div>
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 

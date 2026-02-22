@@ -178,7 +178,6 @@
                     @auth
                     <a
                         href="{{ route('forum.new') }}"
-                        wire:navigate
                         class="flex items-center justify-center py-2"
                     >
                         <span class="relative -top-3 inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 text-white shadow-lg">

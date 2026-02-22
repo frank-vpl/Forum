@@ -13,6 +13,12 @@
                 </div>
                 @error('newComment') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
+        @else
+            <div class="mb-6">
+                <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                    Please <a href="{{ route('login') }}" class="text-blue-600 hover:underline">log in</a> to add a comment or reply.
+                </div>
+            </div>
         @endauth
 
         <div class="relative h-1 mb-3" wire:loading.flex wire:target="loadMore,addRoot,addReply,deleteComment">

@@ -15,12 +15,19 @@
                     <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Forum') }}
                     </flux:sidebar.item>
+                    @auth
                     <flux:sidebar.item icon="document-text" :href="route('user.show', ['id' => auth()->id()])" :current="request()->routeIs('user.show')" wire:navigate>
                         {{ __('My Posts') }}
                     </flux:sidebar.item>
+                    @else
+                    <flux:sidebar.item icon="document-text" :href="route('login')" wire:navigate>
+                        {{ __('My Posts') }}
+                    </flux:sidebar.item>
+                    @endauth
                     <flux:sidebar.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>
                         {{ __('Users') }}
                     </flux:sidebar.item>
+                    @auth
                     <flux:sidebar.item icon="bell" :href="route('notifications.index')" :current="request()->routeIs('notifications.index')" wire:navigate>
                         {{ __('Notifications') }}
                         @php($notifCount = \App\Models\Notification::where('user_id', auth()->id())->whereNull('seen_at')->count())
@@ -28,12 +35,25 @@
                             <span class="ms-2 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-[10px] px-1.5 min-w-[18px] h-[18px]">{{ $notifCount }}</span>
                         @endif
                     </flux:sidebar.item>
+                    @else
+                    <flux:sidebar.item icon="bell" :href="route('login')" wire:navigate>
+                        {{ __('Notifications') }}
+                    </flux:sidebar.item>
+                    @endauth
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 
             <flux:spacer />
 
-            <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
+            @auth
+                <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
+            @else
+                <div class="hidden lg:flex items-center p-4">
+                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3.5 py-2 text-white text-sm hover:bg-blue-700">
+                        {{ __('Log in') }}
+                    </a>
+                </div>
+            @endauth
         </flux:sidebar>
 
 
@@ -43,6 +63,7 @@
 
             <flux:spacer />
 
+            @auth
             <flux:dropdown position="top" align="end">
                 <flux:profile
                     :initials="auth()->user()->initials()"
@@ -102,6 +123,11 @@
                     </form>
                 </flux:menu>
             </flux:dropdown>
+            @else
+            <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3.5 py-2 text-white text-sm hover:bg-blue-700">
+                {{ __('Log in') }}
+            </a>
+            @endauth
         </flux:header>
 
         {{ $slot }}
@@ -125,6 +151,7 @@
                         <flux:icon name="users" class="w-6 h-6" />
                         <span class="text-[11px] leading-tight">Users</span>
                     </a>
+                    @auth
                     <a
                         href="{{ route('notifications.index') }}"
                         wire:navigate
@@ -139,7 +166,7 @@
                         </div>
                         <span class="text-[11px] leading-tight">Notifications</span>
                     </a>
-                                        <a
+                    <a
                         href="{{ route('user.show', ['id' => auth()->id()]) }}"
                         wire:navigate
                         class="flex flex-col items-center justify-center gap-1 py-2 {{
@@ -151,6 +178,22 @@
                         <flux:icon name="user" class="w-6 h-6" />
                         <span class="text-[11px] leading-tight">Profile</span>
                     </a>
+                    @else
+                    <a
+                        href="{{ route('login') }}"
+                        class="flex flex-col items-center justify-center gap-1 py-2 text-zinc-700 dark:text-zinc-200"
+                    >
+                        <flux:icon name="bell" class="w-6 h-6" />
+                        <span class="text-[11px] leading-tight">Notifications</span>
+                    </a>
+                    <a
+                        href="{{ route('login') }}"
+                        class="flex flex-col items-center justify-center gap-1 py-2 text-zinc-700 dark:text-zinc-200"
+                    >
+                        <flux:icon name="user" class="w-6 h-6" />
+                        <span class="text-[11px] leading-tight">Profile</span>
+                    </a>
+                    @endauth
                 </div>
             </div>
         </nav>

@@ -6,9 +6,9 @@
             <div class="relative p-6 md:p-8">
                 <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                     <h1 dir="auto" class="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ $post->title }}</h1>
-                    @auth
-                        @if(auth()->id() === ($u?->id))
-                            <div class="flex items-center gap-2 md:mt-1 shrink-0">
+                    <div class="flex items-center gap-2 md:mt-1 shrink-0">
+                        @auth
+                            @if(auth()->id() === ($u?->id))
                                 <a href="{{ url('/new?id='.$post->id) }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3.5 py-2 text-white text-sm hover:bg-blue-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a1.5 1.5 0 0 1 2.121 2.121l-9.9 9.9L6 16l.492-3.083 10.37-9.43zM19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h6" />
@@ -22,9 +22,16 @@
                                     </svg>
                                     Delete
                                 </button>
-                            </div>
-                        @endif
-                    @endauth
+                            @endif
+                        @endauth
+                        <button type="button" class="inline-flex items-center gap-1 rounded-lg border border-gray-300 dark:border-gray-700 px-2.5 py-1 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            onclick="const u=`${location.origin}/forum/{{ $post->id }}`; navigator.clipboard.writeText(u).then(()=>{ this.dataset.label=this.innerText; this.innerText='Copied'; setTimeout(()=>{ this.innerText=this.dataset.label||'Copy link'; },1500); });">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6h2.25A2.25 2.25 0 0 1 18 8.25v7.5A2.25 2.25 0 0 1 15.75 18h-2.25M10.5 6H8.25A2.25 2.25 0 0 0 6 8.25v7.5A2.25 2.25 0 0 0 8.25 18h2.25M8.25 12h7.5" />
+                            </svg>
+                            Copy link
+                        </button>
+                    </div>
                 </div>
                 <div class="mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div class="flex items-center gap-3">
@@ -97,7 +104,7 @@
             @else
                 <a href="{{ route('login') }}" class="text-blue-600 hover:underline">Log in to like</a>
             @endauth
-            <a href="{{ url('/dashboard') }}" class="text-gray-600 hover:underline dark:text-gray-300">Back</a>
+            <a href="{{ url('/dashboard') }}" class="text-gray-600 hover:underline dark:text-gray-300">Back to Forum</a>
         </div>
 
         <livewire:pages.post-comments :postId="$post->id" />

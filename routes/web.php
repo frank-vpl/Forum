@@ -11,9 +11,7 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified', 'not.banned'])
-    ->name('dashboard');
+Route::view('dashboard', 'dashboard')->name('dashboard');
 
 // Notifications
 Route::view('/notifications', 'pages.notifications-container')

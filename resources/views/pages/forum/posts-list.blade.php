@@ -19,15 +19,21 @@
                     <div class="flex items-center gap-3 mb-3">
                         @php $u = $post->user; @endphp
                         @if($u?->profile_image_url)
-                            <img src="{{ $u->profile_image_url }}" alt="{{ $u->name }}" class="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-700">
+                            <a href="{{ url('/user/'.($u->id ?? '')) }}" wire:navigate>
+                                <img src="{{ $u->profile_image_url }}" alt="{{ $u->name }}" class="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-700">
+                            </a>
                         @else
-                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-xs font-semibold text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700">
-                                {{ $u?->initials() }}
-                            </div>
+                            <a href="{{ url('/user/'.($u->id ?? '')) }}" wire:navigate>
+                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-xs font-semibold text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700">
+                                    {{ $u?->initials() }}
+                                </div>
+                            </a>
                         @endif
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-1">
-                                <span class="text-sm font-medium text-gray-900 dark:text-white truncate">{!! \App\Support\TextFilters::flagify($u?->name ?? 'Unknown') !!}</span>
+                                <a href="{{ url('/user/'.($u->id ?? '')) }}" wire:navigate class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                    {!! \App\Support\TextFilters::flagify($u?->name ?? 'Unknown') !!}
+                                </a>
                                 @if($u?->getBadgeIconPath())
                                     <img src="{{ $u->getBadgeIconPath() }}" alt="{{ $u->getBadgeTooltip() }}" class="w-4 h-4" title="{{ $u->getBadgeTooltip() }}">
                                 @endif

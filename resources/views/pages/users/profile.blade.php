@@ -15,6 +15,13 @@
                         @if($user->getBadgeIconPath())
                             <img src="{{ $user->getBadgeIconPath() }}" alt="{{ $user->getBadgeTooltip() }}" class="w-5 h-5" title="{{ $user->getBadgeTooltip() }}">
                         @endif
+                        <button type="button" class="hidden md:inline-flex items-center gap-1 rounded-lg border border-gray-300 dark:border-gray-700 px-2.5 py-1 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            onclick="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>{ this.dataset.label=this.innerText; this.innerText='Copied'; setTimeout(()=>{ this.innerText=this.dataset.label||'Copy link'; },1500); });">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6h2.25A2.25 2.25 0 0 1 18 8.25v7.5A2.25 2.25 0 0 1 15.75 18h-2.25M10.5 6H8.25A2.25 2.25 0 0 0 6 8.25v7.5A2.25 2.25 0 0 0 8.25 18h2.25M8.25 12h7.5" />
+                            </svg>
+                            Copy link
+                        </button>
                     </div>
                     <div class="mt-1 flex flex-wrap items-center gap-2">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
@@ -73,6 +80,15 @@
                 <div class="mt-1 text-base font-semibold text-gray-900 dark:text-white">{{ $postsCount }}</div>
             </div>
         </div>
+        <div class="md:hidden mt-3">
+            <button type="button" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 w-full justify-center hover:bg-gray-50 dark:hover:bg-gray-700"
+                onclick="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>{ this.dataset.label=this.innerText; this.innerText='Copied'; setTimeout(()=>{ this.innerText=this.dataset.label||'Copy link'; },1500); });">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6h2.25A2.25 2.25 0 0 1 18 8.25v7.5A2.25 2.25 0 0 1 15.75 18h-2.25M10.5 6H8.25A2.25 2.25 0 0 0 6 8.25v7.5A2.25 2.25 0 0 0 8.25 18h2.25M8.25 12h7.5" />
+                </svg>
+                Copy link
+            </button>
+        </div>
         @auth
             @if(auth()->id() === $user->id)
                 <div class="md:hidden">
@@ -94,15 +110,21 @@
                     <div class="flex items-center gap-3 mb-3">
                         @php $u = $post->user; @endphp
                         @if($u?->profile_image_url)
-                            <img src="{{ $u->profile_image_url }}" alt="{{ $u->name }}" class="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-700">
+                            <a href="{{ url('/user/'.($u->id ?? '')) }}" wire:navigate>
+                                <img src="{{ $u->profile_image_url }}" alt="{{ $u->name }}" class="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-700">
+                            </a>
                         @else
-                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-xs font-semibold text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700">
-                                {{ $u?->initials() }}
-                            </div>
+                            <a href="{{ url('/user/'.($u->id ?? '')) }}" wire:navigate>
+                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-xs font-semibold text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700">
+                                    {{ $u?->initials() }}
+                                </div>
+                            </a>
                         @endif
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-1">
-                                <span class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $u?->name ?? 'Unknown' }}</span>
+                                <a href="{{ url('/user/'.($u->id ?? '')) }}" wire:navigate class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                    {{ $u?->name ?? 'Unknown' }}
+                                </a>
                                 @if($u?->getBadgeIconPath())
                                     <img src="{{ $u->getBadgeIconPath() }}" alt="{{ $u->getBadgeTooltip() }}" class="w-4 h-4" title="{{ $u->getBadgeTooltip() }}">
                                 @endif

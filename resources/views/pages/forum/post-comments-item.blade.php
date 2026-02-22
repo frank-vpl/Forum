@@ -1,23 +1,32 @@
 @php($u = $comment->user)
 <div class="flex items-start gap-3" x-data="{ open: false }" x-on:comment-replied.window="if ($event.detail && $event.detail.parentId === {{ $comment->id }}) open = false">
     @if($u?->profile_image_url)
-        <img src="{{ $u->profile_image_url }}" alt="{{ $u->name }}" class="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-700">
+        <a href="{{ url('/user/'.($u->id ?? '')) }}" wire:navigate>
+            <img src="{{ $u->profile_image_url }}" alt="{{ $u->name }}" class="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-700">
+        </a>
     @else
-        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-xs font-semibold text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700">
-            {{ $u?->initials() }}
-        </div>
+        <a href="{{ url('/user/'.($u->id ?? '')) }}" wire:navigate>
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-xs font-semibold text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700">
+                {{ $u?->initials() }}
+            </div>
+        </a>
     @endif
     <div class="flex-1">
-        <div class="flex items-center gap-2 text-sm">
-            <span class="font-medium text-gray-900 dark:text-white">{{ $u?->name ?? 'Unknown' }}</span>
-            @if($u?->getBadgeIconPath())
-                <img src="{{ $u->getBadgeIconPath() }}" alt="{{ $u->getBadgeTooltip() }}" class="w-4 h-4" title="{{ $u->getBadgeTooltip() }}">
-            @endif
-            <span class="text-gray-500 dark:text-gray-400">•</span>
-            <span class="text-gray-500 dark:text-gray-400">{{ $comment->created_at?->diffForHumans() }}</span>
-            <span class="text-blue-600 dark:text-blue-400 underline">
-                to {{ $comment->parent_id ? ($comment->replyTo?->user?->name ?? 'user') : 'Post' }}
-            </span>
+        <div class="text-sm">
+            <div class="flex items-center gap-2">
+                <a href="{{ url('/user/'.($u->id ?? '')) }}" wire:navigate class="font-medium text-gray-900 dark:text-white">
+                    {{ $u?->name ?? 'Unknown' }}
+                </a>
+                @if($u?->getBadgeIconPath())
+                    <img src="{{ $u->getBadgeIconPath() }}" alt="{{ $u->getBadgeTooltip() }}" class="w-4 h-4" title="{{ $u->getBadgeTooltip() }}">
+                @endif
+                <span class="text-blue-600 dark:text-blue-400 underline">
+                    to {{ $comment->parent_id ? ($comment->replyTo?->user?->name ?? 'user') : 'Post' }}
+                </span>
+            </div>
+            <div class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                {{ $comment->created_at?->diffForHumans() }}
+            </div>
         </div>
         <div dir="auto" class="mt-1 text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{!! \App\Support\TextFilters::flagify($comment->text) !!}</div>
         <div class="mt-2 flex items-center gap-3">

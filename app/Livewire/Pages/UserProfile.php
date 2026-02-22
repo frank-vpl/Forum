@@ -41,6 +41,7 @@ class UserProfile extends Component
             ->where('user_id', $this->userId)
             ->orderByDesc('created_at')
             ->paginate(10);
+        $posts->withPath('/user/'.$this->userId);
 
         $likedPostIds = [];
         if (Auth::check()) {

@@ -34,7 +34,7 @@
                             <span class="font-medium">activity</span>
                         @endif
                         @if($n->post)
-                            <a href="{{ route('forum.show', ['id' => $n->post->id]) }}" class="text-blue-600 hover:underline font-semibold" wire:navigate>
+                            <a href="{{ route('forum.show', ['id' => $n->post->id]) }}" class="text-blue-600 hover:underline font-semibold">
                                 {{ $n->post->title }}
                             </a>
                         @endif

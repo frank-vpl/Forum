@@ -41,7 +41,7 @@ class UsersList extends Component
     {
         return match ($status) {
             'admin' => 'Admin',
-            'verified' => 'Super User (Verified)',
+            'verified' => 'Verified',
             'user' => 'User',
             default => 'User'
         };

@@ -33,7 +33,7 @@
                                 bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300
                             @endif
                         ">
-                            {{ $user->status === 'admin' ? 'Admin' : ($user->status === 'verified' ? 'Super User (Verified)' : 'User') }}
+                            {{ $user->status === 'admin' ? 'Admin' : ($user->status === 'verified' ? 'Verified' : 'User') }}
                         </span>
                     </div>
                 </div>

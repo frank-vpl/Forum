@@ -143,7 +143,7 @@
                 if (!el) return;
                 const FLAG = '🇮🇷';
                 const IMG_URL = '{{ asset('iran.png') }}';
-                const IMG_HTML = `<img src="${IMG_URL}" alt="${FLAG}" style="height:1em;width:auto;vertical-align:-0.2em" class="emoji-flag emoji-flag-ir">`;
+                const IMG_HTML = `<img src="${IMG_URL}" alt="${FLAG}" style="height:1.2em;width:auto;vertical-align:-0.2em" class="emoji-flag emoji-flag-ir">`;
                 if (window.marked) {
                     const renderer = new marked.Renderer();
                     const rtlRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;

@@ -78,7 +78,7 @@
                     <a dir="auto" href="{{ url('/forum/'.$post->id) }}" class="block text-lg font-semibold text-gray-900 dark:text-white hover:underline mb-1">
                         {!! \App\Support\TextFilters::flagify(\Illuminate\Support\Str::limit($post->title, 60)) !!}
                     </a>
-                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                    <p dir="auto" class="text-sm text-gray-600 dark:text-gray-300 mb-4">
                         {!! \App\Support\TextFilters::flagify(\Illuminate\Support\Str::limit(strip_tags($post->content), 45)) !!}
                     </p>
 

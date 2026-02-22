@@ -262,7 +262,7 @@
                         const img = document.createElement('img');
                         img.src = IMG_URL;
                         img.alt = FLAG;
-                        img.style.height = '1em';
+                        img.style.height = '1.2em';
                         img.style.width = 'auto';
                         img.style.verticalAlign = '-0.2em';
                         img.className = 'emoji-flag emoji-flag-ir';

@@ -81,7 +81,7 @@
         </div>
 
         <div class="max-w-none">
-            <div id="post-content" class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
+            <div id="post-content" wire:ignore class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
                 <pre class="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200">{{ $post->content }}</pre>
             </div>
         </div>

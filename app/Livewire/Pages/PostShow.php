@@ -76,7 +76,6 @@ class PostShow extends Component
         }
 
         $this->refreshCounts();
-        $this->redirect(route('forum.show', ['id' => $this->postId]), navigate: true);
     }
 
     private function recordUniqueView(): void

@@ -11,15 +11,31 @@
             @php($actor = $n->actor)
             <div class="flex items-start gap-4 py-3">
                 @if($actor?->profile_image_url)
-                    <img src="{{ $actor->profile_image_url }}" alt="{{ $actor->name }}" class="w-12 h-12 rounded-full object-cover border border-gray-200 dark:border-gray-700">
+                    <a href="{{ route('user.show', ['id' => $actor->id]) }}" wire:navigate>
+                        <img src="{{ $actor->profile_image_url }}" alt="{{ $actor->name }}" class="w-12 h-12 rounded-full object-cover border border-gray-200 dark:border-gray-700">
+                    </a>
                 @else
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-sm font-semibold text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700">
-                        {{ $actor?->initials() }}
-                    </div>
+                    @if($actor)
+                        <a href="{{ route('user.show', ['id' => $actor->id]) }}" wire:navigate>
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-sm font-semibold text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700">
+                                {{ $actor->initials() }}
+                            </div>
+                        </a>
+                    @else
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-sm font-semibold text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700">
+                            {{ 'U' }}
+                        </div>
+                    @endif
                 @endif
                 <div class="flex-1">
                     <div class="flex items-center gap-2 text-base">
-                        <span class="font-semibold text-gray-900 dark:text-white">{{ $actor?->name ?? 'User' }}</span>
+                        @if($actor)
+                            <a href="{{ route('user.show', ['id' => $actor->id]) }}" wire:navigate class="font-semibold text-gray-900 dark:text-white">
+                                {{ $actor->name }}
+                            </a>
+                        @else
+                            <span class="font-semibold text-gray-900 dark:text-white">User</span>
+                        @endif
                         <span class="text-gray-500 dark:text-gray-400">•</span>
                         <span class="text-gray-500 dark:text-gray-400 text-sm">{{ $n->created_at?->diffForHumans() }}</span>
                     </div>

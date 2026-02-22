@@ -113,7 +113,7 @@
         <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
         <style>
             #post-content [dir="rtl"] { text-align: right; }
-            #post-content { font-size: 0.95rem; line-height: 1.75; color: rgb(55 65 81); }
+            #post-content { font-size: 0.95rem; line-height: 1.75; color: rgb(55 65 81); text-align: start; }
             .dark #post-content { color: rgb(229 231 235); }
             #post-content h1 { font-size: 1.875rem; line-height: 2.25rem; font-weight: 700; margin: 1.5rem 0 1rem; }
             #post-content h2 { font-size: 1.5rem; line-height: 2rem; font-weight: 700; margin: 1.25rem 0 0.75rem; }
@@ -126,7 +126,9 @@
             #post-content a { color: rgb(37 99 235); text-decoration: underline; }
             .dark #post-content a { color: rgb(96 165 250); }
             #post-content blockquote { border-left: 4px solid rgb(209 213 219); padding-left: 1rem; color: rgb(75 85 99); }
+            #post-content blockquote[dir="rtl"] { border-left: 0; border-right: 4px solid rgb(209 213 219); padding-left: 0; padding-right: 1rem; }
             .dark #post-content blockquote { border-color: rgb(75 85 99); color: rgb(156 163 175); }
+            .dark #post-content blockquote[dir="rtl"] { border-right-color: rgb(75 85 99); }
             #post-content code { background: rgba(17,24,39,0.05); padding: 0.15rem 0.35rem; border-radius: 0.25rem; }
             .dark #post-content code { background: rgba(255,255,255,0.06); }
             #post-content pre { background: rgba(17,24,39,0.05); padding: 0.75rem; border-radius: 0.5rem; overflow: auto; }
@@ -136,6 +138,11 @@
             #post-content th, #post-content td { border: 1px solid rgb(229 231 235); padding: 0.5rem; }
             .dark #post-content th, .dark #post-content td { border-color: rgb(75 85 99); }
             #post-content .emoji-flag { display: inline !important; margin: 0 !important; border: 0 !important; border-radius: 0 !important; }
+            #post-content strong, #post-content b, #post-content em, #post-content i { unicode-bidi: plaintext; }
+            #post-content th, #post-content td { text-align: start; }
+                    #post-content table[dir="rtl"] { direction: rtl; }
+                    #post-content .md-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+                    #post-content .md-table-scroll table { min-width: max-content; width: auto; }
         </style>
         <script>
             function renderMarkdown() {
@@ -147,15 +154,42 @@
                 if (window.marked) {
                     const renderer = new marked.Renderer();
                     const rtlRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+                    const skipRegex = /[\s0-9!@#$%^&*()\-_=+\[\]{};:'",.<>/?\\|`~\u200E\u200F\u061C\u200C\u200D]/;
                     function detectDirFromText(s) {
                         if (typeof s !== 'string') return 'ltr';
-                        const t = s.trim();
+                        const t = s.replace(/<[^>]*>/g, ' ').replace(/&[#A-Za-z0-9]+;/g, ' ').trim();
                         for (let i = 0; i < t.length; i++) {
                             const ch = t[i];
-                            if (/\s/.test(ch)) continue;
+                            if (skipRegex.test(ch)) continue;
                             return rtlRegex.test(ch) ? 'rtl' : 'ltr';
                         }
                         return 'ltr';
+                    }
+                    function applyInlineDir(root) {
+                        if (!root) return;
+                        const els = root.querySelectorAll('strong,b,em,i');
+                        els.forEach(el => {
+                            const dir = detectDirFromText(el.textContent || '');
+                            el.setAttribute('dir', dir);
+                        });
+                        const blocks = root.querySelectorAll('p,li,blockquote,h1,h2,h3,h4,h5,h6');
+                        blocks.forEach(el => {
+                            if (!el.hasAttribute('dir')) {
+                                el.setAttribute('dir', detectDirFromText(el.textContent || ''));
+                            }
+                        });
+                        root.querySelectorAll('table').forEach(t => {
+                            if (!t.hasAttribute('dir')) t.setAttribute('dir', detectDirFromText(t.textContent || ''));
+                            t.querySelectorAll('th,td').forEach(cell => {
+                                cell.setAttribute('dir', detectDirFromText(cell.textContent || ''));
+                            });
+                            if (!t.parentElement || !t.parentElement.classList.contains('md-table-scroll')) {
+                                const wrap = document.createElement('div');
+                                wrap.className = 'md-table-scroll';
+                                t.parentNode.insertBefore(wrap, t);
+                                wrap.appendChild(t);
+                            }
+                        });
                     }
                     function extractText(arg) {
                         if (typeof arg === 'string') return arg;
@@ -193,6 +227,39 @@
                         const dir = detectDirFromText(text);
                         return html.replace(/^<blockquote\b/, `<blockquote dir="${dir}"`);
                     };
+                    const _strong = renderer.strong?.bind(renderer);
+                    renderer.strong = function(text) {
+                        const dir = detectDirFromText(text);
+                        const html = _strong ? _strong(text) : `<strong>${text}</strong>`;
+                        return html.replace(/^<strong\b/, `<strong dir="${dir}"`);
+                    };
+                    const _em = renderer.em?.bind(renderer);
+                    renderer.em = function(text) {
+                        const dir = detectDirFromText(text);
+                        const html = _em ? _em(text) : `<em>${text}</em>`;
+                        return html.replace(/^<em\b/, `<em dir="${dir}"`);
+                    };
+                    const _table = renderer.table?.bind(renderer);
+                    renderer.table = function(header, body) {
+                        const raw = `${header || ''} ${body || ''}`;
+                        const dir = detectDirFromText(raw);
+                        const html = _table ? _table(header, body) : `<table><thead>${header}</thead><tbody>${body}</tbody></table>`;
+                        return html.replace(/^<table\b/, `<table dir="${dir}"`);
+                    };
+                    const _tablerow = renderer.tablerow?.bind(renderer);
+                    renderer.tablerow = function(content) {
+                        const html = _tablerow ? _tablerow(content) : `<tr>${content}</tr>`;
+                        return html;
+                    };
+                    const _tablecell = renderer.tablecell?.bind(renderer);
+                    renderer.tablecell = function(content, flags) {
+                        const text = extractText(content);
+                        const dir = detectDirFromText(text);
+                        const tag = flags && flags.header ? 'th' : 'td';
+                        const align = flags && flags.align ? ` style="text-align:${flags.align}"` : '';
+                        const htmlContent = typeof content === 'string' ? content : (content && typeof content === 'object' ? (content.raw ?? content.text ?? '') : String(content ?? ''));
+                        return `<${tag} dir="${dir}"${align}>${htmlContent}</${tag}>`;
+                    };
                     const _link = renderer.link;
                     renderer.link = function(href, title, text) {
                         const html = _link.call(this, href, title, text);
@@ -204,6 +271,42 @@
                 const dirty = String(raw ?? '').replaceAll(FLAG, IMG_HTML);
                 const html = DOMPurify.sanitize(marked.parse(dirty));
                 el.innerHTML = html;
+                if (typeof applyInlineDir === 'function') {
+                    applyInlineDir(el);
+                } else {
+                    const rtlRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+                    const skipRegex = /[\s0-9!@#$%^&*()\-_=+\[\]{};:'",.<>/?\\|`~\u200E\u200F\u061C\u200C\u200D]/;
+                    function detectDirFromTextLocal(s) {
+                        if (typeof s !== 'string') return 'ltr';
+                        const t = s.replace(/<[^>]*>/g, ' ').replace(/&[#A-Za-z0-9]+;/g, ' ').trim();
+                        for (let i = 0; i < t.length; i++) {
+                            const ch = t[i];
+                            if (skipRegex.test(ch)) continue;
+                            return rtlRegex.test(ch) ? 'rtl' : 'ltr';
+                        }
+                        return 'ltr';
+                    }
+                    el.querySelectorAll('strong,b,em,i').forEach(elm => {
+                        elm.setAttribute('dir', detectDirFromTextLocal(elm.textContent || ''));
+                    });
+                    el.querySelectorAll('p,li,blockquote,h1,h2,h3,h4,h5,h6').forEach(elm => {
+                        if (!elm.hasAttribute('dir')) {
+                            elm.setAttribute('dir', detectDirFromTextLocal(elm.textContent || ''));
+                        }
+                    });
+                    el.querySelectorAll('table').forEach(t => {
+                        if (!t.hasAttribute('dir')) t.setAttribute('dir', detectDirFromTextLocal(t.textContent || ''));
+                        t.querySelectorAll('th,td').forEach(cell => {
+                            cell.setAttribute('dir', detectDirFromTextLocal(cell.textContent || ''));
+                        });
+                        if (!t.parentElement || !t.parentElement.classList.contains('md-table-scroll')) {
+                            const wrap = document.createElement('div');
+                            wrap.className = 'md-table-scroll';
+                            t.parentNode.insertBefore(wrap, t);
+                            wrap.appendChild(t);
+                        }
+                    });
+                }
             }
 
             document.addEventListener('DOMContentLoaded', renderMarkdown);

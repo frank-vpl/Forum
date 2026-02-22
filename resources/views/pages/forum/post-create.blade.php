@@ -7,13 +7,13 @@
     <form wire:submit.prevent="save" class="space-y-5">
         <div>
             <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
-            <input type="text" wire:model.defer="title" class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="Enter a clear title">
+            <input dir="auto" type="text" wire:model.defer="title" class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="Enter a clear title">
             @error('title') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
         </div>
 
         <div>
             <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
-            <input type="text" wire:model.defer="category" class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="e.g. General, Help, Ideas">
+            <input dir="auto" type="text" wire:model.defer="category" class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="e.g. General, Help, Ideas">
             @error('category') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
         </div>
 
@@ -21,7 +21,7 @@
             <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Content (Markdown)</label>
             <input type="hidden" id="content-hidden" wire:model.defer="content" value="{{ $content }}">
             <div wire:ignore>
-                <textarea id="markdown-editor"></textarea>
+                <textarea dir="auto" id="markdown-editor"></textarea>
             </div>
             @error('content') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
         </div>
@@ -37,10 +37,12 @@
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     <style>
-        .editor-preview, .editor-preview-side { font-size: 0.95rem; line-height: 1.75; color: rgb(55 65 81); }
+        .editor-preview, .editor-preview-side { font-size: 0.95rem; line-height: 1.75; color: rgb(55 65 81); text-align: start; }
         .dark .editor-preview, .dark .editor-preview-side { color: rgb(229 231 235); background-color: #1f2937; }
         .editor-preview [dir="rtl"], .editor-preview-side [dir="rtl"] { text-align: right; }
         .editor-preview .emoji-flag, .editor-preview-side .emoji-flag { display: inline !important; height: 1em; width: auto; vertical-align: -0.2em; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; }
+        .editor-preview strong, .editor-preview b, .editor-preview em, .editor-preview i,
+        .editor-preview-side strong, .editor-preview-side b, .editor-preview-side em, .editor-preview-side i { unicode-bidi: plaintext; }
         /* Dark mode for CodeMirror editor */
         .dark .CodeMirror { background-color: #111827; color: #e5e7eb; border-color: #374151; }
         .dark .CodeMirror-cursor { border-left: 1px solid #e5e7eb; }
@@ -59,7 +61,9 @@
         .editor-preview a, .editor-preview-side a { color: rgb(37 99 235); text-decoration: underline; }
         .dark .editor-preview a, .dark .editor-preview-side a { color: rgb(96 165 250); }
         .editor-preview blockquote, .editor-preview-side blockquote { border-left: 4px solid rgb(209 213 219); padding-left: 1rem; color: rgb(75 85 99); }
+        .editor-preview blockquote[dir="rtl"], .editor-preview-side blockquote[dir="rtl"] { border-left: 0; border-right: 4px solid rgb(209 213 219); padding-left: 0; padding-right: 1rem; }
         .dark .editor-preview blockquote, .dark .editor-preview-side blockquote { border-color: rgb(75 85 99); color: rgb(156 163 175); }
+        .dark .editor-preview blockquote[dir="rtl"], .dark .editor-preview-side blockquote[dir="rtl"] { border-right-color: rgb(75 85 99); }
         .editor-preview code, .editor-preview-side code { background: rgba(17,24,39,0.05); padding: 0.15rem 0.35rem; border-radius: 0.25rem; }
         .dark .editor-preview code, .dark .editor-preview-side code { background: rgba(255,255,255,0.06); }
         .editor-preview pre, .editor-preview-side pre { background: rgba(17,24,39,0.05); padding: 0.75rem; border-radius: 0.5rem; overflow: auto; }
@@ -68,6 +72,11 @@
         .editor-preview table, .editor-preview-side table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
         .editor-preview th, .editor-preview td, .editor-preview-side th, .editor-preview-side td { border: 1px solid rgb(229 231 235); padding: 0.5rem; }
         .dark .editor-preview th, .dark .editor-preview td, .dark .editor-preview-side th, .dark .editor-preview-side td { border-color: rgb(75 85 99); }
+        .editor-preview th, .editor-preview td, .editor-preview-side th, .editor-preview-side td { text-align: start; }
+        .editor-preview table[dir="rtl"], .editor-preview-side table[dir="rtl"] { direction: rtl; }
+        .editor-preview .md-table-scroll, .editor-preview-side .md-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+        .editor-preview .md-table-scroll table, .editor-preview-side .md-table-scroll table { min-width: max-content; width: auto; }
+        .CodeMirror pre { unicode-bidi: plaintext; text-align: start; }
     </style>
     <script>
         document.addEventListener('livewire:navigated', () => {
@@ -89,15 +98,24 @@
             if (window.marked) {
                 const renderer = new marked.Renderer();
                 const rtlRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+                const skipRegex = /[\s0-9!@#$%^&*()\-_=+\[\]{};:'",.<>/?\\|`~\u200E\u200F\u061C\u200C\u200D]/;
                 function detectDirFromText(s) {
                     if (typeof s !== 'string') return 'ltr';
-                    const t = s.trim();
+                    const t = s.replace(/<[^>]*>/g, ' ').replace(/&[#A-Za-z0-9]+;/g, ' ').trim();
                     for (let i = 0; i < t.length; i++) {
                         const ch = t[i];
-                        if (/\s/.test(ch)) continue;
+                        if (skipRegex.test(ch)) continue;
                         return rtlRegex.test(ch) ? 'rtl' : 'ltr';
                     }
                     return 'ltr';
+                }
+                function applyInlineDir(root) {
+                    if (!root) return;
+                    const els = root.querySelectorAll('strong,b,em,i');
+                    els.forEach(el => {
+                        const dir = detectDirFromText(el.textContent || '');
+                        el.setAttribute('dir', dir);
+                    });
                 }
                 function extractText(arg) {
                     if (typeof arg === 'string') return arg;
@@ -135,6 +153,39 @@
                     const dir = detectDirFromText(text);
                     return html.replace(/^<blockquote\b/, `<blockquote dir="${dir}"`);
                 };
+                const _table = renderer.table?.bind(renderer);
+                renderer.table = function(header, body) {
+                    const raw = `${header || ''} ${body || ''}`;
+                    const dir = detectDirFromText(raw);
+                    const html = _table ? _table(header, body) : `<table><thead>${header}</thead><tbody>${body}</tbody></table>`;
+                    return html.replace(/^<table\b/, `<table dir="${dir}"`);
+                };
+                const _tablerow = renderer.tablerow?.bind(renderer);
+                renderer.tablerow = function(content) {
+                    const html = _tablerow ? _tablerow(content) : `<tr>${content}</tr>`;
+                    return html;
+                };
+                const _tablecell = renderer.tablecell?.bind(renderer);
+                renderer.tablecell = function(content, flags) {
+                    const text = extractText(content);
+                    const dir = detectDirFromText(text);
+                    const tag = flags && flags.header ? 'th' : 'td';
+                    const align = flags && flags.align ? ` style="text-align:${flags.align}"` : '';
+                    const htmlContent = typeof content === 'string' ? content : (content && typeof content === 'object' ? (content.raw ?? content.text ?? '') : String(content ?? ''));
+                    return `<${tag} dir="${dir}"${align}>${htmlContent}</${tag}>`;
+                };
+                const _strong = renderer.strong?.bind(renderer);
+                renderer.strong = function(text) {
+                    const dir = detectDirFromText(text);
+                    const html = _strong ? _strong(text) : `<strong>${text}</strong>`;
+                    return html.replace(/^<strong\b/, `<strong dir="${dir}"`);
+                };
+                const _em = renderer.em?.bind(renderer);
+                renderer.em = function(text) {
+                    const dir = detectDirFromText(text);
+                    const html = _em ? _em(text) : `<em>${text}</em>`;
+                    return html.replace(/^<em\b/, `<em dir="${dir}"`);
+                };
                 const _link = renderer.link;
                 renderer.link = function(href, title, text) {
                     const html = _link.call(this, href, title, text);
@@ -150,7 +201,44 @@
                 previewRender: function(text) {
                     try {
                         const dirty = String(text ?? '').replaceAll(FLAG, IMG_HTML);
-                        return DOMPurify.sanitize(marked.parse(dirty));
+                        const sanitized = DOMPurify.sanitize(marked.parse(dirty));
+                        const tmp = document.createElement('div');
+                        tmp.innerHTML = sanitized;
+                        if (typeof detectDirFromText === 'function') {
+                            const rtlRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+                            const skipRegex = /[\s0-9!@#$%^&*()\-_=+\[\]{};:'",.<>/?\\|`~\u200E\u200F\u061C\u200C\u200D]/;
+                            function detectDirFromTextLocal(s) {
+                                if (typeof s !== 'string') return 'ltr';
+                                const t = s.replace(/<[^>]*>/g, ' ').replace(/&[#A-Za-z0-9]+;/g, ' ').trim();
+                                for (let i = 0; i < t.length; i++) {
+                                    const ch = t[i];
+                                    if (skipRegex.test(ch)) continue;
+                                    return rtlRegex.test(ch) ? 'rtl' : 'ltr';
+                                }
+                                return 'ltr';
+                            }
+                            const els = tmp.querySelectorAll('strong,b,em,i');
+                            els.forEach(el => el.setAttribute('dir', detectDirFromTextLocal(el.textContent || '')));
+                            const blocks = tmp.querySelectorAll('p,li,blockquote,h1,h2,h3,h4,h5,h6');
+                            blocks.forEach(el => {
+                                if (!el.hasAttribute('dir')) {
+                                    el.setAttribute('dir', detectDirFromTextLocal(el.textContent || ''));
+                                }
+                            });
+                            tmp.querySelectorAll('table').forEach(t => {
+                                if (!t.hasAttribute('dir')) t.setAttribute('dir', detectDirFromTextLocal(t.textContent || ''));
+                                t.querySelectorAll('th,td').forEach(cell => {
+                                    cell.setAttribute('dir', detectDirFromTextLocal(cell.textContent || ''));
+                                });
+                                if (!t.parentElement || !t.parentElement.classList.contains('md-table-scroll')) {
+                                    const wrap = document.createElement('div');
+                                    wrap.className = 'md-table-scroll';
+                                    t.parentNode.insertBefore(wrap, t);
+                                    wrap.appendChild(t);
+                                }
+                            });
+                        }
+                        return tmp.innerHTML;
                     } catch (e) {
                         return text;
                     }
@@ -164,6 +252,8 @@
                 placeholder: 'Write your post in Markdown...',
             });
             ta._mde = mde;
+            const wrapper = mde.codemirror.getWrapperElement && mde.codemirror.getWrapperElement();
+            if (wrapper) wrapper.setAttribute('dir', 'auto');
             const hidden = document.getElementById('content-hidden');
             if (hidden && hidden.value) {
                 mde.value(hidden.value);

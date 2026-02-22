@@ -35,8 +35,8 @@ class PostCreate extends Component
     public function save(): void
     {
         $this->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'category' => ['required', 'string', 'max:100'],
+            'title' => ['required', 'string', 'max:60'],
+            'category' => ['required', 'string', 'max:20'],
             'content' => ['required', 'string'],
         ]);
 

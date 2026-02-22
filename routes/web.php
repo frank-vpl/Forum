@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleOAuthController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -45,5 +46,9 @@ Route::get('/users', function () {
 
 // Premium
 Route::view('/premium', 'pages.premium-container')->name('premium.index');
+
+// Google OAuth
+Route::get('/auth/google', [GoogleOAuthController::class, 'redirect'])->name('oauth.google.redirect');
+Route::get('/callback/google', [GoogleOAuthController::class, 'callback'])->name('oauth.google.callback');
 
 require __DIR__.'/settings.php';

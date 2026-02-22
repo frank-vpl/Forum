@@ -123,15 +123,12 @@
                     <flux:menu.separator />
 
                     <flux:menu.radio.group>
-                                @if(in_array(auth()->user()->status, ['admin','verified']))
-                                    <flux:menu.item icon="star" class="rounded-md bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100 cursor-default">
-                                        You are Premium
-                                    </flux:menu.item>
-                                @else
-                                    <flux:menu.item :href="route('premium.index')" icon="star" wire:navigate class="rounded-md bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100">
+                                @if(!in_array(auth()->user()->status, ['admin','verified']))
+                                    <flux:menu.item :href="route('premium.index')" icon="star" wire:navigate>
                                         Buy Premium
                                     </flux:menu.item>
                                 @endif
+                                 <flux:menu.separator />
                         <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>
                             {{ __('Settings') }}
                         </flux:menu.item>

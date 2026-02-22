@@ -53,6 +53,7 @@ class PersistAuthRedirect
                             ? ltrim($target, '/')
                             : ltrim(route('dashboard', absolute: false), '/');
                         $encoded = rawurlencode($value);
+
                         return redirect()->to($request->url().'?redirect='.$encoded);
                     }
                 }
@@ -86,12 +87,14 @@ class PersistAuthRedirect
                 return true;
             }
         }
+
         return false;
     }
 
     protected function isHomePath(string $path): bool
     {
         $onlyPath = parse_url($path, PHP_URL_PATH) ?: '/';
+
         return $onlyPath === '/';
     }
 
@@ -103,10 +106,9 @@ class PersistAuthRedirect
                 return true;
             }
         }
+
         return false;
     }
-
-
 
     protected function isLoginOrRegister(string $name): bool
     {
@@ -128,6 +130,7 @@ class PersistAuthRedirect
         if ($query) {
             $target .= '?'.$query;
         }
+
         return $target;
     }
 

@@ -124,11 +124,13 @@ class PostShow extends Component
         if ($n < 1000000) {
             $v = round($n / 1000, 1);
             $s = rtrim(rtrim(number_format($v, 1, '.', ''), '0'), '.');
+
             return $s.'k';
         }
         if ($n < 1000000000) {
             $v = round($n / 1000000, 1);
             $s = rtrim(rtrim(number_format($v, 1, '.', ''), '0'), '.');
+
             return $s.'M';
         }
         if ($n >= 1000000000000) {
@@ -136,6 +138,7 @@ class PostShow extends Component
         }
         $v = round($n / 1000000000, 1);
         $s = rtrim(rtrim(number_format($v, 1, '.', ''), '0'), '.');
+
         return $s.'B';
     }
 

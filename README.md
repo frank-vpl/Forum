@@ -146,6 +146,49 @@ MAIL_ENCRYPTION=ssl
 - MAIL_FROM_NAME: display name; typically your app name.
 - MAIL_ENCRYPTION: ssl or tls per provider requirements.
 
+#### Google OAuth (optional)
+
+```dotenv
+# Google OAuth
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT="${APP_URL}/callback/google"
+```
+
+Callback URL: ${APP_URL}/callback/google  
+Login redirect route: /auth/google
+
+Steps to obtain these from Google Cloud Console:
+- Create a project:
+  1. Open https://console.cloud.google.com/ and sign in.
+  2. Click the project selector (top left) → New Project → give it a name → Create → switch to it.
+- Configure OAuth consent screen:
+  1. Navigation menu → APIs & Services → OAuth consent screen.
+  2. Choose “External” for public use or “Internal” for organization-only.
+  3. App name, support email, developer contact email → Save and Continue.
+  4. Scopes: add openid, email, profile (Google automatically provides these for basic sign-in).
+  5. Test users (if app not published): add the Gmail accounts that can sign in while you test.
+  6. Save (you can keep the app in testing mode for development).
+- Create OAuth client:
+  1. Navigation menu → APIs & Services → Credentials → Create Credentials → OAuth client ID.
+  2. Application type: Web application.
+  3. Name: e.g., IranGuard Web.
+  4. Authorized JavaScript origins: add your base URL (example: http://127.0.0.1:8000 or http://localhost:8000).
+  5. Authorized redirect URIs: add ${APP_URL}/callback/google (example: http://127.0.0.1:8000/callback/google).
+  6. Click Create. Copy the Client ID and Client Secret into your .env as GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.
+- Update your .env:
+  - Set APP_URL to your base URL (e.g., http://127.0.0.1:8000).
+  - Set GOOGLE_REDIRECT to ${APP_URL}/callback/google (default in .env.example is set this way).
+  - Run: php artisan config:clear
+- Try it:
+  - Start the app: php artisan serve
+  - Visit /auth/google or click “Continue with Google” on the Login/Register page.
+
+Notes:
+- In “Testing” mode, only test users can log in; to allow anyone, publish the consent screen.
+- For production domains, ensure your APP_URL uses HTTPS and add the exact origin and redirect URI in Google.
+- If you change APP_URL or port, update the “Authorized JavaScript origins” and “Authorized redirect URIs” accordingly.
+
 ### Database
 - SQLite works out of the box. For MySQL, remove comments (`#`) from the DB variables above and fill in your credentials.
 - Then run migrations:

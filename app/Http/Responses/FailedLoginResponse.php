@@ -4,7 +4,6 @@ namespace App\Http\Responses;
 
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\FailedLoginResponse as FailedLoginResponseContract;
 
@@ -27,4 +26,3 @@ class FailedLoginResponse implements FailedLoginResponseContract
         ]);
     }
 }
-

@@ -18,7 +18,7 @@ class UsersList extends Component
     public function render()
     {
         $usersQuery = User::query()
-            ->when(!(Auth::user()?->isAdmin()), fn ($q) => $q->where('status', '!=', 'banned'))
+            ->when(! (Auth::user()?->isAdmin()), fn ($q) => $q->where('status', '!=', 'banned'))
             ->orderBy('status', 'desc') // Order by status: admin, verified, user, banned
             ->orderBy('name', 'asc'); // Then by name alphabetically
 

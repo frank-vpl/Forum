@@ -4,15 +4,15 @@ namespace App\Providers;
 
 use App\Models\User;
 use Carbon\CarbonImmutable;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Laravel\Fortify\Fortify;
-use Laravel\Fortify\Contracts\FailedLoginResponse;
 use Illuminate\Validation\ValidationException;
+use Laravel\Fortify\Contracts\FailedLoginResponse;
+use Laravel\Fortify\Fortify;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -74,6 +74,7 @@ class AppServiceProvider extends ServiceProvider
                         'email' => ['Your account has been banned.'],
                     ]);
                 }
+
                 return $user;
             });
         }

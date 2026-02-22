@@ -43,11 +43,11 @@ class PostsList extends Component
                 break;
             case 'verified_users':
                 $query->whereHas('user', fn ($q) => $q->whereIn('status', ['admin', 'verified']))
-                      ->orderByDesc('created_at');
+                    ->orderByDesc('created_at');
                 break;
             case 'admin_posts':
                 $query->whereHas('user', fn ($q) => $q->where('status', 'admin'))
-                      ->orderByDesc('created_at');
+                    ->orderByDesc('created_at');
                 break;
             case 'news':
             default:

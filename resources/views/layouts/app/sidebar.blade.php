@@ -127,8 +127,8 @@
                                     <flux:menu.item :href="route('premium.index')" icon="star" wire:navigate>
                                         Buy Premium
                                     </flux:menu.item>
+                                    <flux:menu.separator />
                                 @endif
-                                 <flux:menu.separator />
                         <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>
                             {{ __('Settings') }}
                         </flux:menu.item>

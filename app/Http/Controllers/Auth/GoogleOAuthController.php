@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Features;
@@ -77,8 +78,8 @@ class GoogleOAuthController
             return redirect()->route('login')->withErrors(['email' => 'Unable to complete sign in (userinfo).']);
         }
 
-        $email = (string) $userInfoRes->json('email', '');
-        $name = (string) $userInfoRes->json('name', '');
+        $email = strtolower(trim((string) $userInfoRes->json('email', '')));
+        $name = trim((string) $userInfoRes->json('name', ''));
 
         if ($email === '') {
             return redirect()->route('login')->withErrors(['email' => 'Google account has no email.']);
@@ -86,16 +87,32 @@ class GoogleOAuthController
 
         $user = User::where('email', $email)->first();
         if (! $user) {
-            $user = User::create([
-                'name' => ($name !== '') ? $name : (explode('@', $email)[0] ?? 'User'),
-                'email' => $email,
-                'password' => Str::password(),
-                'status' => 'user',
-            ]);
-
-            $user->forceFill([
-                'email_verified_at' => now(),
-            ])->save();
+            $safeName = $name !== '' ? $name : (explode('@', $email)[0] ?? 'User');
+            $safeName = mb_substr($safeName, 0, 60);
+            try {
+                \Illuminate\Support\Facades\DB::transaction(function () use (&$user, $email, $safeName): void {
+                    $user = User::create([
+                        'name' => $safeName,
+                        'email' => $email,
+                        'password' => Str::password(32),
+                        'status' => 'user',
+                        'post_filter' => 'news',
+                    ]);
+                    $user->forceFill([
+                        'email_verified_at' => now(),
+                        'remember_token' => Str::random(60),
+                    ])->save();
+                });
+            } catch (\Illuminate\Database\QueryException $e) {
+                $user = User::where('email', $email)->first();
+                if (! $user) {
+                    return redirect()->route('login')
+                        ->withErrors(['email' => 'Could not create account via Google (database).']);
+                }
+            } catch (\Throwable $e) {
+                return redirect()->route('login')
+                    ->withErrors(['email' => 'Could not create account via Google.']);
+            }
         }
 
         if ($user->isBanned()) {
@@ -110,6 +127,8 @@ class GoogleOAuthController
 
             return redirect()->route('two-factor.login');
         }
+
+        Auth::login($user, true);
 
         $intended = (string) $request->session()->pull('oauth.redirect', '');
         if ($intended !== '') {

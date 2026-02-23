@@ -223,7 +223,7 @@
                                 <li>
                                     <a href="{{ route('users.index') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
                                         <flux:icon name="users" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
-                                        Users
+                                        Users Directory
                                     </a>
                                 </li>
                                 <li>

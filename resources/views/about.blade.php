@@ -65,6 +65,7 @@
                                     <a href="{{ url('/terms') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->is('terms') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">Terms</a>
                                     <a href="{{ url('/privacy') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->is('privacy') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">Privacy</a>
                                     <a href="{{ url('/about') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->is('about') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">About</a>
+                                    <a href="{{ route('faq') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->routeIs('faq') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">FAQ</a>
                                     <div class="my-2 h-px bg-zinc-200 dark:bg-zinc-700"></div>
                                     @guest
                                         <a href="{{ route('login') }}" class="block rounded-lg px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">Log in</a>
@@ -461,15 +462,49 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('dashboard') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                    <a href="{{ route('forum.new') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
                                         <flux:icon name="sparkles" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
                                         New Post
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('faq') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                        <flux:icon name="question-mark-circle" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
+                                        FAQ
                                     </a>
                                 </li>
                             </ul>
                         </div>
                         <div>
-                            <h5 class="font-semibold text-zinc-900 dark:text-white">Legal</h5>
+                            <h5 class="font-semibold text-zinc-900 dark:text-white">Account</h5>
+                            <ul class="mt-3 space-y-2">
+                                @guest
+                                    <li>
+                                        <a href="{{ route('login') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                            <flux:icon name="arrow-right-start-on-rectangle" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
+                                            Log in
+                                        </a>
+                                    </li>
+                                    @if (Route::has('register'))
+                                    <li>
+                                        <a href="{{ route('register') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                            <flux:icon name="user-plus" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
+                                            Register
+                                        </a>
+                                    </li>
+                                    @endif
+                                @else
+                                    <li>
+                                        <a href="{{ route('dashboard') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                            <flux:icon name="arrow-uturn-right" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
+                                            Go to Dashboard
+                                        </a>
+                                    </li>
+                                @endguest
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-zinc-900 dark:text-white">Project</h5>
                             <ul class="mt-3 space-y-2">
                                 <li>
                                     <a href="{{ url('/terms') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
@@ -493,23 +528,6 @@
                                     <a href="https://github.com/frank-vpl/Forum" target="_blank" rel="noopener" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
                                         <flux:icon name="code-bracket" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
                                         GitHub Repo
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h5 class="font-semibold text-zinc-900 dark:text-white">Contact</h5>
-                            <ul class="mt-3 space-y-2">
-                                <li>
-                                    <a href="{{ route('dashboard') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
-                                        <flux:icon name="chat-bubble-left-right" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
-                                        Community
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="https://github.com/frank-vpl/Forum/issues" target="_blank" rel="noopener" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
-                                        <flux:icon name="bug-ant" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
-                                        Issues
                                     </a>
                                 </li>
                             </ul>

@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -31,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->configureAuthGuards();
+        $this->registerBladeDirectives();
     }
 
     /**
@@ -78,5 +80,12 @@ class AppServiceProvider extends ServiceProvider
                 return $user;
             });
         }
+    }
+
+    protected function registerBladeDirectives(): void
+    {
+        Blade::directive('format_count', function ($expression): string {
+            return "<?php \$__n=(int)($expression); if (\$__n<1000){echo \$__n;} elseif (\$__n<1000000){\$__v=round(\$__n/1000,1);\$__s=rtrim(rtrim(number_format(\$__v,1,'.',''),'0'),'.');echo \$__s.'k';} elseif (\$__n<1000000000){\$__v=round(\$__n/1000000,1);\$__s=rtrim(rtrim(number_format(\$__v,1,'.',''),'0'),'.');echo \$__s.'M';} elseif (\$__n>=1000000000000){echo '+999B';} else { \$__v=round(\$__n/1000000000,1);\$__s=rtrim(rtrim(number_format(\$__v,1,'.',''),'0'),'.');echo \$__s.'B';} ?>";
+        });
     }
 }

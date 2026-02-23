@@ -1,60 +1,673 @@
 <x-layouts.home :title="__('Home')">
-    <section class="min-h-screen bg-white dark:bg-zinc-900">
-        <div class="mx-auto max-w-6xl px-6 py-16 lg:py-24">
+    <section class="relative overflow-hidden">
+        <div class="absolute inset-0 -z-10 bg-gradient-to-b from-blue-50 via-white to-white dark:from-zinc-800 dark:via-zinc-900 dark:to-zinc-900"></div>
+        <div class="mx-auto max-w-7xl px-6 py-16 lg:py-24">
+            <header class="fixed left-0 right-0 top-0 z-40">
+                <div class="mx-auto max-w-7xl px-6 pt-4">
+                    <div class="flex items-center justify-between rounded-full border border-zinc-200 bg-white/80 px-4 py-2 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-zinc-700 dark:bg-zinc-900/60">
+                        <a href="{{ route('home') }}" class="flex items-center gap-2">
+                            <img src="{{ asset('logo.svg') }}" alt="{{ config('app.name') }}" class="h-7 w-auto dark:brightness-90">
+                            <span class="sr-only">{{ config('app.name') }}</span>
+                        </a>
+                        <nav class="hidden md:flex items-center gap-6 text-sm">
+                            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">Home</a>
+                            <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">Forum</a>
+                            <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.index') ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">Users Directory</a>
+                            <a href="{{ url('/terms') }}" class="{{ request()->is('terms') ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">Terms</a>
+                            <a href="{{ url('/privacy') }}" class="{{ request()->is('privacy') ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">Privacy</a>
+                            <a href="{{ url('/about') }}" class="{{ request()->is('about') ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">About</a>
+                        </nav>
+                        <div class="hidden md:block">
+                            @guest
+                                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-white text-sm hover:bg-blue-700">
+                                    Log in
+                                </a>
+                            @else
+                                <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 rounded-full border border-zinc-300 px-4 py-2 text-sm text-zinc-900 hover:bg-zinc-100 dark:border-zinc-700 dark:text-white dark:hover:bg-zinc-700/50">
+                                    Go to Dashboard
+                                </a>
+                            @endguest
+                        </div>
+                        <div class="md:hidden">
+                            <details class="relative group">
+                                <summary class="list-none inline-flex items-center gap-2 rounded-full border border-zinc-300 px-3 py-1.5 text-sm text-zinc-900 hover:bg-zinc-100 dark:border-zinc-700 dark:text-white dark:hover:bg-zinc-800 cursor-pointer">
+                                    <flux:icon name="bars-2" class="h-5 w-5" />
+                                    Menu
+                                </summary>
+                                <div class="absolute right-0 mt-2 w-56 origin-top-right rounded-xl border border-zinc-200 bg-white p-2 shadow-lg ring-1 ring-black/5 dark:border-zinc-700 dark:bg-zinc-900">
+                                    <a href="{{ route('home') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->routeIs('home') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">Home</a>
+                                    <a href="{{ route('dashboard') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->routeIs('dashboard') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">Forum</a>
+                                    <a href="{{ route('users.index') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->routeIs('users.index') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 pipeline dark:hover:bg-zinc-800' }}">Users Directory</a>
+                                    <a href="{{ url('/terms') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->is('terms') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">Terms</a>
+                                    <a href="{{ url('/privacy') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->is('privacy') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">Privacy</a>
+                                    <a href="{{ url('/about') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->is('about') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">About</a>
+                                    <div class="my-2 h-px bg-zinc-200 dark:bg-zinc-700"></div>
+                                    @guest
+                                        <a href="{{ route('login') }}" class="block rounded-lg px-3 py-2 text-sm text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40">Log in</a>
+                                    @else
+                                        <a href="{{ route('dashboard') }}" class="block rounded-lg px-3 py-2 text-sm text-zinc-900 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">Go to Dashboard</a>
+                                    @endguest
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="h-14"></div>
             <div class="flex items-center justify-center">
                 <img src="{{ asset('logo.svg') }}" alt="{{ config('app.name') }}" class="h-12 w-auto dark:brightness-90">
             </div>
             <div class="mt-8 text-center">
-                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                    Freedom community for Iran
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+                    A modern, privacy‑minded forum for Iran
                 </h1>
-                <p class="mt-4 text-base sm:text-lg text-zinc-600 dark:text-zinc-300">
-                    For Pahlavi supporters, patriots, and monarchists — Javid Shah.
+                <p class="mx-auto mt-5 max-w-2xl text-base sm:text-lg text-zinc-600 dark:text-zinc-300">
+                    Create posts, discuss freely, and connect with patriots. Clean UI, fast interactions, and secure authentication.
                 </p>
                 <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
                     @guest
-                        <a href="{{ route('dashboard') }}" wire:navigate class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700">
-                            Enter Forum
+                        <a href="{{ route('login', ['redirect' => ltrim(route('dashboard', absolute: false), '/')]) }}" class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700">
+                            Join the community
                         </a>
-                        <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-lg border border-zinc-300 dark:border-zinc-700 px-5 py-2.5 text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                            Log in
+                        <a href="{{ url('/auth/google').('?redirect='.urlencode(ltrim(route('dashboard', absolute: false), '/'))) }}" class="inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-300 dark:border-zinc-700 px-5 py-2.5 text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-4 w-4">
+                                <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12   c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24   c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                                <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,16.087,18.961,14,24,14c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657   C34.046,6.053,29.268,4,24,4C16.318,4,9.611,8.337,6.306,14.691z"/>
+                                <path fill="#4CAF50" d="M24,44c5.164,0,9.86-1.977,13.409-5.195l-6.19-5.238C29.297,35.091,26.784,36,24,36   c-5.189,0-9.607-3.313-11.267-7.946l-6.51,5.016C9.484,39.556,16.227,44,24,44z"/>
+                                <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.794,2.241-2.231,4.166-4.094,5.569   c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.865,40.031,44,35,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                            </svg>
+                            Continue with Google
                         </a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-lg border border-zinc-300 dark:border-zinc-700 px-5 py-2.5 text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                                Register
-                            </a>
-                        @endif
                     @endguest
                 </div>
+                <div class="relative mx-auto mt-12 max-w-5xl rounded-2xl border border-zinc-200 bg-white shadow-md dark:border-zinc-700 dark:bg-zinc-800">
+                    <img src="{{ asset('images/screenshot.png') }}" alt="App screenshot" class="w-full rounded-2xl">
+                </div>
             </div>
-            <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="mx-auto mt-12 max-w-5xl">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-2xl border border-zinc-200 bg-white p-6 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <div>
+                        <div class="text-3xl font-extrabold text-zinc-900 dark:text-white">@format_count($stats['users'] ?? 0)</div>
+                        <div class="mt-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Members</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-extrabold text-zinc-900 dark:text-white">@format_count($stats['posts'] ?? 0)</div>
+                        <div class="mt-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Posts</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-extrabold text-zinc-900 dark:text-white">@format_count($stats['comments'] ?? 0)</div>
+                        <div class="mt-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Comments</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
                     <div class="flex items-center gap-3">
                         <flux:icon name="home" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
                         <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Forum</h3>
                     </div>
-                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Latest discussions from the community with mobile-first UI.</p>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Create posts, explore categories, and read with a clean, mobile‑first UI.</p>
                 </div>
                 <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
                     <div class="flex items-center gap-3">
-                        <flux:icon name="users" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Users</h3>
+                        <flux:icon name="chat-bubble-left-right" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Comments & Replies</h3>
                     </div>
-                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Public profiles with posts, views, comments, and badges.</p>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Discuss with threaded comments and stay on topic with quick replies.</p>
                 </div>
                 <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
                     <div class="flex items-center gap-3">
-                        <flux:icon name="cog" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Settings</h3>
+                        <flux:icon name="heart" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Likes & Views</h3>
                     </div>
-                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Profile, password, two-factor, and appearance preferences.</p>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Track engagement with compact counts for likes, views, and comments.</p>
+                </div>
+                <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="flex items-center gap-3">
+                        <flux:icon name="bell" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Notifications</h3>
+                    </div>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Stay updated when your posts get likes or comments.</p>
+                </div>
+                <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="flex items-center gap-3">
+                        <flux:icon name="user" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Profiles</h3>
+                    </div>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Public profiles with image, bio, and verified/admin badges.</p>
+                </div>
+                <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="flex items-center gap-3">
+                        <flux:icon name="shield-check" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Security</h3>
+                    </div>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Email verification, two‑factor auth, and banned user protection.</p>
+                </div>
+                <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="flex items-center gap-3">
+                        <flux:icon name="key" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Google Login</h3>
+                    </div>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Sign in with Google and stay remembered across sessions.</p>
+                </div>
+                <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="flex items-center gap-3">
+                        <flux:icon name="sparkles" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Livewire UX</h3>
+                    </div>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Fast interactions powered by Livewire, Vite, and Tailwind.</p>
+                </div>
+                <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="flex items-center gap-3">
+                        <flux:icon name="lock-closed" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Privacy First</h3>
+                    </div>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">No unnecessary tracking. Open source and community‑driven.</p>
                 </div>
             </div>
-            <div class="mt-12 flex justify-center">
-                <a href="{{ route('dashboard') }}" wire:navigate class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700">
-                    Explore the Forum
-                </a>
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="flex items-center gap-3">
+                        <flux:icon name="sparkles" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Why IranGuard</h3>
+                    </div>
+                    <p class="mt-3 text-zinc-600 dark:text-zinc-300 text-sm leading-6">
+                        Built for clarity and speed. Navigate threads, read comfortably on mobile, and find what matters fast. Thoughtful defaults help you post with confidence.
+                    </p>
+                    <p class="mt-3 text-zinc-600 dark:text-zinc-300 text-sm leading-6">
+                        Engagement is simple: likes, views, and replies use compact counts for easy scanning. Notifications keep you in the loop without noise.
+                    </p>
+                </div>
+                <div class="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="flex items-center gap-3">
+                        <flux:icon name="shield-check" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Security & Privacy</h3>
+                    </div>
+                    <p class="mt-3 text-zinc-600 dark:text-zinc-300 text-sm leading-6">
+                        Verified emails, optional two‑factor authentication, and strict banned‑user enforcement protect the community. Sign in with Google to stay remembered securely.
+                    </p>
+                    <p class="mt-3 text-zinc-600 dark:text-zinc-300 text-sm leading-6">
+                        Your data stays yours. We avoid invasive analytics and keep configuration transparent for self‑hosting and audits.
+                    </p>
+                </div>
             </div>
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="flex items-center gap-3">
+                        <flux:icon name="device-phone-mobile" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Made for Mobile</h3>
+                    </div>
+                    <p class="mt-3 text-zinc-600 dark:text-zinc-300 text-sm leading-6">
+                        Pages load fast and feel native on phones. Layouts adapt to small screens, while typography stays readable and clean.
+                    </p>
+                    <p class="mt-3 text-zinc-600 dark:text-zinc-300 text-sm leading-6">
+                        Core actions are a tap away. Create, like, view, and reply without friction.
+                    </p>
+                </div>
+                <div class="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="flex items-center gap-3">
+                        <flux:icon name="shield-exclamation" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Moderation & Safety</h3>
+                    </div>
+                    <p class="mt-3 text-zinc-600 dark:text-zinc-300 text-sm leading-6">
+                        Strong defaults keep discussions healthy. Banned users cannot interact, and content tools help surface quality posts.
+                    </p>
+                    <p class="mt-3 text-zinc-600 dark:text-zinc-300 text-sm leading-6">
+                        You control your presence. Edit your profile, manage notifications, and secure your account with two‑factor.
+                    </p>
+                </div>
+            </div>
+            <div class="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <h4 class="text-base font-semibold text-zinc-900 dark:text-white">Clarity</h4>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Minimal noise, focused reading, and consistent UI patterns.</p>
+                </div>
+                <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <h4 class="text-base font-semibold text-zinc-900 dark:text-white">Respect</h4>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Community guidelines promote constructive, civil discussion.</p>
+                </div>
+                <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <h4 class="text-base font-semibold text-zinc-900 dark:text-white">Performance</h4>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Livewire and Vite deliver fast, smooth interactions.</p>
+                </div>
+            </div>
+            <div class="mt-16 rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">FAQ</h3>
+                <div class="mt-4 divide-y divide-zinc-200 dark:divide-zinc-700">
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            How do I create a post?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Register or log in, then click New to open the editor. Choose a category, write your content, and publish.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            How do notifications work?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            You’ll receive notifications when your posts get likes or comments. Open the bell menu to view and mark them as read.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Is my account secure?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Yes. Email verification and two‑factor authentication are supported. Google login keeps you remembered across sessions.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            How do I verify my email?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            After registration, we email a verification link. Click it to unlock posting and other features. You can resend the link from the Settings page.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            How do I enable two‑factor authentication (2FA)?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Open Settings and enable two‑factor. Scan the QR with an authenticator app and store recovery codes safely.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Can I change my name or email later?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Yes. Go to Settings to update profile details. Changing email may require re‑verification.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            How do I upload or change my profile image?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            From your profile Settings, upload a square image for best results. We store and serve it from secure storage.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            What categories can I post in?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Choose a category that fits your topic when creating a post. We highlight official and verified content separately.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            How do I report abuse or spam?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Use the Report controls on profiles or posts where available. Our moderation tools prioritize repeated or severe violations.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Can I edit or delete my posts and comments?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            You can delete your own posts and comments. Edit options may vary by release; if not available, delete and repost your corrected content.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Are external links allowed in posts or profiles?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Yes, but keep them relevant and safe. Suspicious links can be removed by moderators to protect the community.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            What do the verified and admin badges mean?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Verified signals trusted identity; Admin designates staff. Badges display beside names on posts and profiles.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            How do I become verified?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Verification is granted by admins for notable or trusted accounts. Criteria and requests are evaluated case‑by‑case.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            What data do you collect about me?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Only what’s needed for authentication and content (email, profile details, activity). We avoid invasive tracking and analytics by default.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Do you support dark mode?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Yes. The interface adapts to your system preference and can be adjusted in Settings where available.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Are Persian posts supported?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Yes. The platform supports right‑to‑left scripts and Unicode content; Persian and English posts are welcome.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            How do I reset my password?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Use “Forgot password” on the login page to receive a reset link via email. Follow the link to set a new password.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Can I change my notification preferences?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Yes. Open Settings to manage how you’re notified about likes and comments. You can mute or clear notifications anytime.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            How are views and likes counted?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Likes are unique per user. Views deduplicate per user or device/browser, providing a more accurate reach estimate.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Can I deactivate or delete my account?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            You can request account deletion via support. We will remove personal data while preserving public discussion integrity where required.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Do you offer a premium plan?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Premium features are showcased on the Premium page. Upgrades help support development and hosting costs.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Does Google sign‑in keep me logged in?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Yes. We remember your session after Google login. If you enable 2FA, you’ll complete a one‑time challenge.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            How do I format my posts?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Use the editor’s basic formatting tools. Keep paragraphs short; links and media should be relevant and safe for all audiences.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Can I follow specific users or categories?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            You can browse by categories and profiles. Following and feed personalization are planned improvements as the community grows.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Do you support real‑time updates?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            The interface is optimized for quick refreshes and snappy interactions. Real‑time streaming is on the roadmap.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Is there a code of conduct?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Yes. We promote respectful, constructive discussion. Harassment, spam, or illegal content may lead to moderation or bans.
+                        </p>
+                    </details>
+                    <details class="group py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-2 text-sm text-zinc-900 dark:text-white">
+                            Do you have an API or developer access?
+                            <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
+                        </summary>
+                        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                            Not yet. We are evaluating a public API for future releases to enable integrations and community tools.
+                        </p>
+                    </details>
+                </div>
+            </div>
+            <div class="mt-16 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-center text-white">
+                <h3 class="text-2xl font-semibold">Ready to join the conversation?</h3>
+                <p class="mt-2 text-sm opacity-90">Create an account in seconds and start posting.</p>
+                <div class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-blue-700 hover:bg-blue-50">
+                        Create account
+                    </a>
+                    <a href="{{ url('/auth/google').('?redirect='.urlencode(ltrim(route('dashboard', absolute: false), '/'))) }}" class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/30 px-5 py-2.5 hover:bg-white/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-4 w-4">
+                            <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12   c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.611,8.337,6.306,14.691z"/>
+                            <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,16.087,18.961,14,24,14c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657   C34.046,6.053,29.268,4,24,4C16.318,4,9.611,8.337,6.306,14.691z"/>
+                            <path fill="#4CAF50" d="M24,44c5.164,0,9.86-1.977,13.409-5.195l-6.19-5.238C29.297,35.091,26.784,36,24,36   c-5.189,0-9.607-3.313-11.267-7.946l-6.51,5.016C9.484,39.556,16.227,44,24,44z"/>
+                            <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.794,2.241-2.231,4.166-4.094,5.569   c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.865,40.031,44,35,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                        </svg>
+                        Continue with Google
+                    </a>
+                </div>
+            </div>
+            <div class="mt-16 rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div class="max-w-2xl">
+                        <div class="flex items-center gap-3">
+                            <flux:icon name="code-bracket" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                            <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Open Source on GitHub</h3>
+                        </div>
+                        <p class="mt-3 text-sm leading-6 text-zinc-600 dark:text-zinc-300">
+                            IranGuard Forum is fully open source under GPL‑3.0. Explore the code, open issues, and contribute to the community.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <a href="https://github.com/frank-vpl/Forum" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.1.82-.27.82-.6v-2.2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.4-1.34-1.77-1.34-1.77-1.1-.75.08-.74.08-.74 1.22.09 1.86 1.26 1.86 1.26 1.08 1.85 2.83 1.32 3.52 1 .1-.78.42-1.32.76-1.62-2.66-.3-5.47-1.34-5.47-5.98 0-1.32.47-2.4 1.24-3.25-.12-.3-.54-1.52.12-3.18 0 0 1.02-.33 3.34 1.24a11.5 11.5 0 0 1 6.08 0c2.32-1.57 3.34-1.24 3.34-1.24.66 1.66.24 2.88.12 3.18.77.85 1.24 1.93 1.24 3.25 0 4.65-2.81 5.67-5.49 5.97.43.37.81 1.1.81 2.22v3.29c0 .33.22.71.83.6A12 12 0 0 0 12 .5z"/>
+                            </svg>
+                            View on GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-16 rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="flex items-start gap-4">
+                        <div class="rounded-lg bg-blue-100 p-2 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                            <flux:icon name="document-plus" class="h-6 w-6" />
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-zinc-900 dark:text-white">Create</h4>
+                            <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-300">Write posts with categories and start new conversations.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="rounded-lg bg-green-100 p-2 text-green-700 dark:bg-green-900/40 dark:text-green-300">
+                            <flux:icon name="chat-bubble-left-right" class="h-6 w-6" />
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-zinc-900 dark:text-white">Discuss</h4>
+                            <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-300">Reply and react with quick, real‑time interactions.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="rounded-lg bg-purple-100 p-2 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
+                            <flux:icon name="globe-alt" class="h-6 w-6" />
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-zinc-900 dark:text-white">Connect</h4>
+                            <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-300">Discover verified voices and follow community trends.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 flex flex-col items-center gap-3">
+                @guest
+                    <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700">
+                        Create your account
+                    </a>
+                    <a href="{{ route('login') }}" class="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white">
+                        Already have an account? Log in
+                    </a>
+                @endguest
+            </div>
+            <footer class="mt-16">
+                <div class="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <img src="{{ asset('logo.svg') }}" alt="{{ config('app.name') }}" class="h-6 w-auto dark:brightness-90">
+                                <span class="font-semibold text-zinc-900 dark:text-white">{{ config('app.name') }}</span>
+                            </div>
+                            <p class="mt-3 text-zinc-600 dark:text-zinc-300">
+                                Freedom community forum for Iran — simple, fast, and privacy‑minded.
+                            </p>
+                            <div class="mt-4">
+                                <a href="https://github.com/frank-vpl/Forum" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-white hover:bg-zinc-800 dark:bg-zinc-700 dark:hover:bg-zinc-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.1.82-.27.82-.6v-2.2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.4-1.34-1.77-1.34-1.77-1.1-.75.08-.74.08-.74 1.22.09 1.86 1.26 1.86 1.26 1.08 1.85 2.83 1.32 3.52 1 .1-.78.42-1.32.76-1.62-2.66-.3-5.47-1.34-5.47-5.98 0-1.32.47-2.4 1.24-3.25-.12-.3-.54-1.52.12-3.18 0 0 1.02-.33 3.34 1.24a11.5 11.5 0 0 1 6.08 0c2.32-1.57 3.34-1.24 3.34-1.24.66 1.66.24 2.88.12 3.18.77.85 1.24 1.93 1.24 3.25 0 4.65-2.81 5.67-5.49 5.97.43.37.81 1.1.81 2.22v3.29c0 .33.22.71.83.6A12 12 0 0 0 12 .5z"/>
+                                    </svg>
+                                    View on GitHub
+                                </a>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-zinc-900 dark:text-white">Explore</h5>
+                            <ul class="mt-3 space-y-2">
+                                <li>
+                                    <a href="{{ route('dashboard') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                        <flux:icon name="home" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
+                                        Forum
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('users.index') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                        <flux:icon name="users" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
+                                        Users Directory
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-zinc-900 dark:text-white">Account</h5>
+                            <ul class="mt-3 space-y-2">
+                                @guest
+                                    <li>
+                                        <a href="{{ route('login') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                            <flux:icon name="arrow-right-start-on-rectangle" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
+                                            Log in
+                                        </a>
+                                    </li>
+                                    @if (Route::has('register'))
+                                    <li>
+                                        <a href="{{ route('register') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                            <flux:icon name="user-plus" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
+                                            Register
+                                        </a>
+                                    </li>
+                                    @endif
+                                @else
+                                    <li>
+                                        <a href="{{ route('dashboard') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                            <flux:icon name="arrow-uturn-right" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
+                                            Go to Dashboard
+                                        </a>
+                                    </li>
+                                @endguest
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-zinc-900 dark:text-white">Project</h5>
+                            <ul class="mt-3 space-y-2">
+                                <li>
+                                    <a href="{{ url('/terms') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                        <flux:icon name="document-text" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
+                                        Terms
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url('/privacy') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                        <flux:icon name="shield-check" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
+                                        Privacy
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url('/about') }}" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                        <flux:icon name="information-circle" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
+                                        About
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://github.com/frank-vpl/Forum" target="_blank" rel="noopener" class="group inline-flex items-center gap-2 rounded-lg px-1 py-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-700/50 dark:hover:text-white">
+                                        <flux:icon name="code-bracket" class="h-4 w-4 opacity-70 group-hover:opacity-100" />
+                                        GitHub Repo
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-zinc-200 pt-6 dark:border-zinc-700">
+                        <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                            © {{ date('Y') }} {{ config('app.name') }} • Open source (GPL‑3.0)
+                        </div>
+                        <div class="flex items-center gap-4 text-xs">
+                            <a href="{{ url('/terms') }}" class="text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white">Terms</a>
+                            <span class="text-zinc-400">•</span>
+                            <a href="{{ url('/privacy') }}" class="text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white">Privacy</a>
+                            <span class="text-zinc-400">•</span>
+                            <a href="{{ url('/about') }}" class="text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white">About</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
     </section>
 </x-layouts.home>

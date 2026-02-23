@@ -23,6 +23,9 @@ class ProfileImageUpload extends Component
 
     public function updatedImage()
     {
+        if (config('auth.require_email_verification') && ! auth()->user()?->hasVerifiedEmail()) {
+            return;
+        }
         $this->validate([
             'image' => 'image|max:2048', // 2MB Max
         ]);
@@ -35,6 +38,9 @@ class ProfileImageUpload extends Component
     {
         $user = auth()->user();
 
+        if (config('auth.require_email_verification') && ! $user?->hasVerifiedEmail()) {
+            return;
+        }
         if ($this->image) {
             // Generate unique filename
             $extension = $this->image->getClientOriginalExtension();
@@ -62,6 +68,9 @@ class ProfileImageUpload extends Component
     {
         $user = auth()->user();
 
+        if (config('auth.require_email_verification') && ! $user?->hasVerifiedEmail()) {
+            return;
+        }
         if ($user->profile_image) {
             Storage::disk('public')->delete($user->profile_image);
             $user->update(['profile_image' => null]);

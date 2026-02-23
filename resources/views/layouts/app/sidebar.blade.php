@@ -16,17 +16,19 @@
                         {{ __('Forum') }}
                     </flux:sidebar.item>
                     @auth
-                    <flux:sidebar.item icon="document-text" :href="route('user.show', ['id' => auth()->id()])" :current="request()->routeIs('user.show')" wire:navigate>
-                        {{ __('My Posts') }}
+                    <flux:sidebar.item
+                        icon="user"
+                        :href="route('user.show', ['id' => auth()->id()])"
+                        :current="(request()->routeIs('user.show') && ((int) request()->route('id') === (int) auth()->id()))"
+                        wire:navigate
+                    >
+                        {{ __('Profile') }}
                     </flux:sidebar.item>
                     @else
-                    <flux:sidebar.item icon="document-text" :href="route('login', ['redirect' => ltrim(route('dashboard', absolute: false), '/')])" wire:navigate>
-                        {{ __('My Posts') }}
+                    <flux:sidebar.item icon="user" :href="route('login', ['redirect' => ltrim(route('dashboard', absolute: false), '/')])" wire:navigate>
+                        {{ __('Profile') }}
                     </flux:sidebar.item>
                     @endauth
-                    <flux:sidebar.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>
-                        {{ __('Users') }}
-                    </flux:sidebar.item>
                     @auth
                     <flux:sidebar.item icon="bell" :href="route('notifications.index')" :current="request()->routeIs('notifications.index')" wire:navigate>
                         {{ __('Notifications') }}
@@ -34,6 +36,9 @@
                         @if($notifCount > 0)
                             <span class="ms-2 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-[10px] px-1.5 min-w-[18px] h-[18px]">{{ $notifCount >= 100 ? '+99' : $notifCount }}</span>
                         @endif
+                    </flux:sidebar.item>
+                                        <flux:sidebar.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>
+                        {{ __('Users') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="star" :href="route('premium.index')" :current="request()->routeIs('premium.index')" wire:navigate>
                         {{ __('Premium') }}
@@ -62,6 +67,35 @@
                         </div>
                     </div>
                 </flux:sidebar.group>
+                
+                <div class="px-3 pt-3">
+                    <details class="group">
+                        <summary class="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-zinc-900 hover:bg-zinc-100 dark:text-white dark:hover:bg-zinc-800 cursor-pointer">
+                            <span class="inline-flex items-center gap-2">
+                                <flux:icon name="scale" class="w-5 h-5 text-zinc-600 dark:text-zinc-300" />
+                                {{ __('Legal') }}
+                            </span>
+                            <flux:icon name="chevron-down" class="w-5 h-5 text-zinc-600 dark:text-zinc-300 transition-transform group-open:rotate-180" />
+                        </summary>
+                        <div class="mt-2 space-y-1">
+                            <a href="{{ route('home') }}" class="block rounded-lg px-3 py-2 text-sm {{ (request()->routeIs('home') || request()->is('home')) ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">
+                                Home
+                            </a>
+                            <a href="{{ url('/about') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->is('about') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">
+                                About
+                            </a>
+                            <a href="{{ url('/terms') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->is('terms') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">
+                                Terms
+                            </a>
+                            <a href="{{ url('/privacy') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->is('privacy') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">
+                                Privacy
+                            </a>
+                            <a href="{{ url('/faq') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->is('faq') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">
+                                FAQ
+                            </a>
+                        </div>
+                    </details>
+                </div>
             </flux:sidebar.nav>
 
             <flux:spacer />

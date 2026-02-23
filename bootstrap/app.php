@@ -17,5 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', \App\Http\Middleware\PersistAuthRedirect::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e, $request) {
+            $code = $e->getStatusCode();
+            if (in_array($code, [403, 404, 500, 503])) {
+                return response()->view('pages.errors-container', ['code' => $code], $code);
+            }
+        });
     })->create();

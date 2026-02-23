@@ -40,6 +40,11 @@ class PostComments extends Component
         if (! Auth::check()) {
             return;
         }
+        if (config('auth.require_email_verification') && ! Auth::user()->hasVerifiedEmail()) {
+            $path = route('forum.show', ['id' => $this->postId], absolute: false);
+            $this->redirect(route('verification.notice', ['redirect' => ltrim($path, '/')]), navigate: true);
+            return;
+        }
 
         Comment::create([
             'post_id' => $this->postId,
@@ -68,6 +73,11 @@ class PostComments extends Component
         ]);
 
         if (! Auth::check()) {
+            return;
+        }
+        if (config('auth.require_email_verification') && ! Auth::user()->hasVerifiedEmail()) {
+            $path = route('forum.show', ['id' => $this->postId], absolute: false);
+            $this->redirect(route('verification.notice', ['redirect' => ltrim($path, '/')]), navigate: true);
             return;
         }
 

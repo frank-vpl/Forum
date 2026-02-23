@@ -6,10 +6,12 @@ use Laravel\Fortify\Features;
 Route::middleware(['auth', 'not.banned'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
-    Route::livewire('settings/profile', 'pages::settings.profile')->name('profile.edit');
+    Route::livewire('settings/profile', 'pages::settings.profile')
+        ->middleware(when(config('auth.require_email_verification'), ['verified'], []))
+        ->name('profile.edit');
 });
 
-Route::middleware(['auth', 'verified', 'not.banned'])->group(function () {
+Route::middleware(['auth', ...when(config('auth.require_email_verification'), ['verified'], []), 'not.banned'])->group(function () {
     Route::livewire('settings/password', 'pages::settings.password')->name('user-password.edit');
     Route::livewire('settings/appearance', 'pages::settings.appearance')->name('appearance.edit');
 

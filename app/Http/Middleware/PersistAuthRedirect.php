@@ -24,7 +24,6 @@ class PersistAuthRedirect
         '/users',
         '/user',
         '/notifications',
-        '/my',
         '/new',
         '/premium',
         '/settings',
@@ -112,7 +111,7 @@ class PersistAuthRedirect
 
     protected function isLoginOrRegister(string $name): bool
     {
-        return $name === 'login' || $name === 'register';
+        return $name === 'login' || $name === 'register' || $name === 'verification.notice';
     }
 
     protected function extractPathFromReferer(?string $referer, Request $request): ?string

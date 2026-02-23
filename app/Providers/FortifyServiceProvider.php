@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -29,6 +31,7 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
+        $this->configureEmailVerificationUrls();
     }
 
     /**
@@ -67,6 +70,24 @@ class FortifyServiceProvider extends ServiceProvider
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
+        });
+    }
+
+    /**
+     * Customize verification email URLs to carry redirect, when available.
+     */
+    private function configureEmailVerificationUrls(): void
+    {
+        VerifyEmail::createUrlUsing(function ($notifiable) {
+            $redirect = session('redirect_after_auth');
+            $params = [
+                'id' => $notifiable->getKey(),
+                'hash' => sha1($notifiable->email),
+            ];
+            if (is_string($redirect) && $redirect !== '') {
+                $params['redirect'] = ltrim($redirect, '/');
+            }
+            return URL::temporarySignedRoute('verification.verify', now()->addMinutes(60), $params);
         });
     }
 }

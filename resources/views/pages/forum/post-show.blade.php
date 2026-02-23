@@ -116,6 +116,23 @@
             <a href="{{ url('/dashboard') }}" class="text-gray-600 hover:underline dark:text-gray-300">Back to Forum</a>
         </div>
 
+        @if(config('auth.require_email_verification') && auth()->check() && ! auth()->user()->hasVerifiedEmail())
+            <div class="mt-4 rounded-xl border border-red-600 bg-red-50 p-4 text-red-700 dark:border-red-700 dark:bg-red-900/30 dark:text-red-300">
+                <div class="flex items-start gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div class="space-y-1">
+                        <p class="text-sm font-medium">Please verify your email to like and comment on posts.</p>
+                        <p class="text-xs opacity-90">We sent a verification link to your email address. Open it to unlock engagement features.</p>
+                        <a href="{{ route('verification.notice', ['redirect' => ltrim(route('forum.show', ['id' => $post->id], absolute: false), '/')]) }}" class="inline-flex items-center gap-1 text-sm font-medium text-red-700 underline hover:text-red-800 dark:text-red-300 dark:hover:text-red-200">
+                            Go to email verification
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <livewire:pages.post-comments :postId="$post->id" />
 
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>

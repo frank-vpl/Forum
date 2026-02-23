@@ -5,17 +5,41 @@
             <header class="fixed left-0 right-0 top-0 z-40">
                 <div class="mx-auto max-w-7xl px-6 pt-4">
                     <div class="flex items-center justify-between rounded-full border border-zinc-200 bg-white/80 px-4 py-2 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-zinc-700 dark:bg-zinc-900/60">
-                        <a href="{{ route('home') }}" class="flex items-center gap-2">
-                            <img src="{{ asset('logo.svg') }}" alt="{{ config('app.name') }}" class="h-7 w-auto dark:brightness-90">
-                            <span class="sr-only">{{ config('app.name') }}</span>
-                        </a>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('home') }}" class="flex items-center gap-2">
+                                <img src="{{ asset('logo.svg') }}" alt="{{ config('app.name') }}" class="h-7 w-auto dark:brightness-90">
+                                <span class="sr-only">{{ config('app.name') }}</span>
+                            </a>
+                            <div class="relative" x-data>
+                            <details x-ref="appearanceMenu" class="relative group">
+                                <summary class="list-none inline-flex items-center gap-2 h-7 rounded-full border border-zinc-300 px-2 py-0 text-sm text-zinc-900 hover:bg-zinc-100 dark:border-zinc-700 dark:text-white dark:hover:bg-zinc-800 cursor-pointer self-center">
+                                    <template x-if="$flux.appearance === 'dark'">
+                                        <flux:icon name="moon" class="h-5 w-5" />
+                                    </template>
+                                    <template x-if="$flux.appearance === 'light'">
+                                        <flux:icon name="sun" class="h-5 w-5" />
+                                    </template>
+                                    <template x-if="$flux.appearance === 'system'">
+                                        <flux:icon name="computer-desktop" class="h-5 w-5" />
+                                    </template>
+                                </summary>
+                                <div class="absolute left-0 mt-2 w-56 origin-top-left rounded-xl border border-zinc-200 bg-white p-2 shadow-lg ring-1 ring-black/5 dark:border-zinc-700 dark:bg-zinc-900">
+                                    <div class="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Appearance</div>
+                                    <a href="#" x-on:click.prevent="$flux.appearance = 'light'; $refs.appearanceMenu.open = false" class="block rounded-lg px-3 py-2 text-sm" :class="$flux.appearance === 'light' ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800'">Light</a>
+                                    <a href="#" x-on:click.prevent="$flux.appearance = 'dark'; $refs.appearanceMenu.open = false" class="block rounded-lg px-3 py-2 text-sm" :class="$flux.appearance === 'dark' ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800'">Dark</a>
+                                    <a href="#" x-on:click.prevent="$flux.appearance = 'system'; $refs.appearanceMenu.open = false" class="block rounded-lg px-3 py-2 text-sm" :class="$flux.appearance === 'system' ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800'">System</a>
+                                </div>
+                            </details>
+                            </div>
+                        </div>
                         <nav class="hidden md:flex items-center gap-6 text-sm">
-                            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">Home</a>
+                            <a href="{{ route('home') }}" class="{{ (request()->routeIs('home') || request()->is('home')) ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">Home</a>
                             <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">Forum</a>
                             <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.index') ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">Users Directory</a>
                             <a href="{{ url('/terms') }}" class="{{ request()->is('terms') ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">Terms</a>
                             <a href="{{ url('/privacy') }}" class="{{ request()->is('privacy') ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">Privacy</a>
                             <a href="{{ url('/about') }}" class="{{ request()->is('about') ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">About</a>
+                            <a href="{{ route('faq') }}" class="{{ request()->routeIs('faq') ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white' }}">FAQ</a>
                         </nav>
                         <div class="hidden md:block">
                             @guest
@@ -24,7 +48,7 @@
                                 </a>
                             @else
                                 <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 rounded-full border border-zinc-300 px-4 py-2 text-sm text-zinc-900 hover:bg-zinc-100 dark:border-zinc-700 dark:text-white dark:hover:bg-zinc-700/50">
-                                    Go to Dashboard
+                                    Open Forum
                                 </a>
                             @endguest
                         </div>
@@ -35,7 +59,7 @@
                                     Menu
                                 </summary>
                                 <div class="absolute right-0 mt-2 w-56 origin-top-right rounded-xl border border-zinc-200 bg-white p-2 shadow-lg ring-1 ring-black/5 dark:border-zinc-700 dark:bg-zinc-900">
-                                    <a href="{{ route('home') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->routeIs('home') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">Home</a>
+                                    <a href="{{ route('home') }}" class="block rounded-lg px-3 py-2 text-sm {{ (request()->routeIs('home') || request()->is('home')) ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">Home</a>
                                     <a href="{{ route('dashboard') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->routeIs('dashboard') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">Forum</a>
                                     <a href="{{ route('users.index') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->routeIs('users.index') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 pipeline dark:hover:bg-zinc-800' }}">Users Directory</a>
                                     <a href="{{ url('/terms') }}" class="block rounded-lg px-3 py-2 text-sm {{ request()->is('terms') ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800' }}">Terms</a>
@@ -45,7 +69,7 @@
                                     @guest
                                         <a href="{{ route('login') }}" class="block rounded-lg px-3 py-2 text-sm text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40">Log in</a>
                                     @else
-                                        <a href="{{ route('dashboard') }}" class="block rounded-lg px-3 py-2 text-sm text-zinc-900 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">Go to Dashboard</a>
+                                        <a href="{{ route('dashboard') }}" class="block rounded-lg px-3 py-2 text-sm text-zinc-900 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">Open Forum</a>
                                     @endguest
                                 </div>
                             </details>
@@ -71,12 +95,16 @@
                         </a>
                         <a href="{{ url('/auth/google').('?redirect='.urlencode(ltrim(route('dashboard', absolute: false), '/'))) }}" class="inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-300 dark:border-zinc-700 px-5 py-2.5 text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-4 w-4">
-                                <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12   c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24   c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                                <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12   c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.611,8.337,6.306,14.691z"/>
                                 <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,16.087,18.961,14,24,14c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657   C34.046,6.053,29.268,4,24,4C16.318,4,9.611,8.337,6.306,14.691z"/>
                                 <path fill="#4CAF50" d="M24,44c5.164,0,9.86-1.977,13.409-5.195l-6.19-5.238C29.297,35.091,26.784,36,24,36   c-5.189,0-9.607-3.313-11.267-7.946l-6.51,5.016C9.484,39.556,16.227,44,24,44z"/>
                                 <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.794,2.241-2.231,4.166-4.094,5.569   c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.865,40.031,44,35,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
                             </svg>
                             Continue with Google
+                        </a>
+                    @else
+                        <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700">
+                            Open Forum
                         </a>
                     @endguest
                 </div>
@@ -348,7 +376,9 @@
                             <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
                         </summary>
                         <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-                            Verification is granted by admins for notable or trusted accounts. Criteria and requests are evaluated case‑by‑case.
+                            Verification requires a $2 upgrade via the Premium page. Visit
+                            <a href="{{ route('premium.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Premium</a>
+                            to upgrade.
                         </p>
                     </details>
                     <details class="group py-4">
@@ -411,7 +441,7 @@
                             <span class="text-zinc-500 transition group-open:rotate-180">⌄</span>
                         </summary>
                         <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-                            You can request account deletion via support. We will remove personal data while preserving public discussion integrity where required.
+                            You can delete your account from your Profile page. We remove personal data while preserving public discussion integrity where required.
                         </p>
                     </details>
                     <details class="group py-4">
@@ -483,18 +513,24 @@
                 <h3 class="text-2xl font-semibold">Ready to join the conversation?</h3>
                 <p class="mt-2 text-sm opacity-90">Create an account in seconds and start posting.</p>
                 <div class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-                    <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-blue-700 hover:bg-blue-50">
-                        Create account
-                    </a>
-                    <a href="{{ url('/auth/google').('?redirect='.urlencode(ltrim(route('dashboard', absolute: false), '/'))) }}" class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/30 px-5 py-2.5 hover:bg-white/10">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-4 w-4">
-                            <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12   c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.611,8.337,6.306,14.691z"/>
-                            <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,16.087,18.961,14,24,14c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657   C34.046,6.053,29.268,4,24,4C16.318,4,9.611,8.337,6.306,14.691z"/>
-                            <path fill="#4CAF50" d="M24,44c5.164,0,9.86-1.977,13.409-5.195l-6.19-5.238C29.297,35.091,26.784,36,24,36   c-5.189,0-9.607-3.313-11.267-7.946l-6.51,5.016C9.484,39.556,16.227,44,24,44z"/>
-                            <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.794,2.241-2.231,4.166-4.094,5.569   c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.865,40.031,44,35,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
-                        </svg>
-                        Continue with Google
-                    </a>
+                    @guest
+                        <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-blue-700 hover:bg-blue-50">
+                            Create account
+                        </a>
+                        <a href="{{ url('/auth/google').('?redirect='.urlencode(ltrim(route('dashboard', absolute: false), '/'))) }}" class="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-5 py-2.5 text-blue-700 hover:bg-blue-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-4 w-4">
+                                <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12   c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.611,8.337,6.306,14.691z"/>
+                                <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,16.087,18.961,14,24,14c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657   C34.046,6.053,29.268,4,24,4C16.318,4,9.611,8.337,6.306,14.691z"/>
+                                <path fill="#4CAF50" d="M24,44c5.164,0,9.86-1.977,13.409-5.195l-6.19-5.238C29.297,35.091,26.784,36,24,36   c-5.189,0-9.607-3.313-11.267-7.946l-6.51,5.016C9.484,39.556,16.227,44,24,44z"/>
+                                <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.794,2.241-2.231,4.166-4.094,5.569   c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.865,40.031,44,35,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                            </svg>
+                            Continue with Google
+                        </a>
+                    @else
+                        <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-blue-700 hover:bg-blue-50">
+                            Open Forum
+                        </a>
+                    @endguest
                 </div>
             </div>
             <div class="mt-16 rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">

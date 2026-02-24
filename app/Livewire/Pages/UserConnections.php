@@ -6,12 +6,9 @@ use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use Livewire\WithPagination;
 
 class UserConnections extends Component
 {
-    use WithPagination;
-
     public int $userId;
 
     public string $mode = 'followers';
@@ -19,6 +16,10 @@ class UserConnections extends Component
     public string $q = '';
 
     public array $keepVisible = [];
+
+    public int $page = 1;
+
+    public int $perPage = 15;
 
     protected $queryString = [
         'q' => ['except' => ''],
@@ -32,7 +33,7 @@ class UserConnections extends Component
 
     public function updatedQ(): void
     {
-        $this->resetPage();
+        $this->page = 1;
     }
 
     public function followUser(int $targetId): void
@@ -85,7 +86,7 @@ class UserConnections extends Component
 
     public function nextPage(): void
     {
-        $this->setPage($this->page + 1);
+        $this->page++;
     }
 
     public function render()
@@ -112,12 +113,15 @@ class UserConnections extends Component
             $base->where('name', 'like', '%'.$this->q.'%');
         }
 
-        $users = $base->orderBy('name')->paginate(15);
+        $total = (clone $base)->count();
+        $users = $base->orderBy('name')->limit($this->page * $this->perPage)->get();
+        $hasMore = ($this->page * $this->perPage) < $total;
 
         return view('pages.users.connections', [
             'users' => $users,
             'userId' => $this->userId,
             'mode' => $this->mode,
+            'hasMore' => $hasMore,
         ]);
     }
 }

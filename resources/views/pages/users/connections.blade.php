@@ -63,7 +63,7 @@
             @endforeach
         </div>
 
-        @if($users->hasMorePages())
+        @if($hasMore)
             <div
                 x-data
                 x-intersect="$wire.nextPage()"

@@ -56,6 +56,23 @@ Route::get('/user/{id}', function (int $id) {
     return view('pages.users.profile-container', ['id' => $id]);
 })->name('user.show');
 
+// User followers/following
+Route::get('/user/{id}/followers', function (int $id) {
+    if (! Auth::check() || Auth::id() !== $id) {
+        abort(403);
+    }
+
+    return view('pages.users.connections-container', ['id' => $id, 'mode' => 'followers']);
+})->middleware(['auth', ...when(config('auth.require_email_verification'), ['verified'], []), 'not.banned'])->name('user.followers');
+
+Route::get('/user/{id}/following', function (int $id) {
+    if (! Auth::check() || Auth::id() !== $id) {
+        abort(403);
+    }
+
+    return view('pages.users.connections-container', ['id' => $id, 'mode' => 'following']);
+})->middleware(['auth', ...when(config('auth.require_email_verification'), ['verified'], []), 'not.banned'])->name('user.following');
+
 Route::post('/user/{id}/block', [UserBlockController::class, 'block'])
     ->middleware(['auth', ...when(config('auth.require_email_verification'), ['verified'], []), 'not.banned'])
     ->name('user.block');

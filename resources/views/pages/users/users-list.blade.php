@@ -13,6 +13,7 @@
                     <flux:radio.group variant="segmented" wire:model.live="filter">
                         <flux:radio value="default">Default</flux:radio>
                         <flux:radio value="latest">Latest</flux:radio>
+                        <flux:radio value="following">Following</flux:radio>
                         <flux:radio value="name">Name</flux:radio>
                         <flux:radio value="verified">Verified</flux:radio>
                         <flux:radio value="official">Official</flux:radio>
@@ -21,12 +22,13 @@
                 <div class="sm:hidden">
                     <flux:dropdown>
                         <flux:button variant="primary" icon:trailing="chevron-down">
-                            {{ $filter === 'default' ? 'Default' : ($filter === 'latest' ? 'Latest' : ($filter === 'name' ? 'Name' : ($filter === 'verified' ? 'Verified' : 'Official'))) }}
+                            {{ $filter === 'default' ? 'Default' : ($filter === 'latest' ? 'Latest' : ($filter === 'following' ? 'Following' : ($filter === 'name' ? 'Name' : ($filter === 'verified' ? 'Verified' : 'Official')))) }}
                         </flux:button>
                         <flux:menu>
                             <flux:menu.radio.group wire:model.live="filter">
                                 <flux:menu.radio value="default">Default</flux:menu.radio>
                                 <flux:menu.radio value="latest">Latest</flux:menu.radio>
+                                <flux:menu.radio value="following">Following</flux:menu.radio>
                                 <flux:menu.radio value="name">Name</flux:menu.radio>
                                 <flux:menu.radio value="verified">Verified</flux:menu.radio>
                                 <flux:menu.radio value="official">Official</flux:menu.radio>

@@ -8,6 +8,7 @@
                 <div class="hidden sm:block">
                     <flux:radio.group variant="segmented" wire:model.live="filter">
                         <flux:radio value="news">Latest</flux:radio>
+                        <flux:radio value="following">Following</flux:radio>
                         <flux:radio value="most_likes">Popular</flux:radio>
                         <flux:radio value="most_views">Trending</flux:radio>
                         <flux:radio value="verified_users">Verified</flux:radio>
@@ -17,11 +18,12 @@
                 <div class="sm:hidden">
                     <flux:dropdown>
                         <flux:button variant="primary" icon:trailing="chevron-down">
-                            {{ $filter === 'news' ? 'Latest' : ($filter === 'most_likes' ? 'Popular' : ($filter === 'most_views' ? 'Trending' : ($filter === 'verified_users' ? 'Verified' : 'Official'))) }}
+                            {{ $filter === 'news' ? 'Latest' : ($filter === 'following' ? 'Following' : ($filter === 'most_likes' ? 'Popular' : ($filter === 'most_views' ? 'Trending' : ($filter === 'verified_users' ? 'Verified' : 'Official')))) }}
                         </flux:button>
                         <flux:menu>
                             <flux:menu.radio.group wire:model.live="filter">
                                 <flux:menu.radio value="news">Latest</flux:menu.radio>
+                                <flux:menu.radio value="following">Following</flux:menu.radio>
                                 <flux:menu.radio value="most_likes">Popular</flux:menu.radio>
                                 <flux:menu.radio value="most_views">Trending</flux:menu.radio>
                                 <flux:menu.radio value="verified_users">Verified</flux:menu.radio>
@@ -150,7 +152,7 @@
     @if($hasMore)
         <div
             x-data="{ busy: false }"
-            x-init="(function(){ const fn = () => { if (busy) return; const near = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200; if (near) { busy = true; $wire.loadMore().then(() => { busy = false; }); } }; window.addEventListener('scroll', fn); })()"
+            x-init="(function(){ const fn = () => { if (busy) return; const near = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200; if (near) { busy = true; $wire.loadMore().then(() => { busy = false; }).catch(() => { $wire.reportLoadError(); busy = false; }); } }; window.addEventListener('scroll', fn); })()"
             class="mt-6"
         >
             @if($loadingMore)

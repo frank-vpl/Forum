@@ -21,9 +21,23 @@
             </div>
 
             <div class="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-300">
-                <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($commentsTotal)</span> Comments</span>
-                <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($viewsTotal)</span> Views</span>
                 <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($postsCount)</span> Posts</span>
+                @auth
+                    @if(auth()->id() === $user->id)
+                        <a href="{{ route('user.followers', ['id' => $user->id]) }}" wire:navigate class="hover:underline">
+                            <span class="font-semibold text-gray-900 dark:text-white">@format_count($followersTotal)</span> Followers
+                        </a>
+                        <a href="{{ route('user.following', ['id' => $user->id]) }}" wire:navigate class="hover:underline">
+                            <span class="font-semibold text-gray-900 dark:text-white">@format_count($followingTotal)</span> Following
+                        </a>
+                    @else
+                        <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($followersTotal)</span> Followers</span>
+                        <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($followingTotal)</span> Following</span>
+                    @endif
+                @else
+                    <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($followersTotal)</span> Followers</span>
+                    <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($followingTotal)</span> Following</span>
+                @endauth
             </div>
 
             @if($user->bio)
@@ -61,6 +75,7 @@
                         >
                             {{ __('Copy Link') }}
                         </flux:button>
+                        <flux:menu.separator />
                     @else
                         <flux:dropdown>
                             <flux:button icon:trailing="chevron-down" variant="outline" size="sm">Options</flux:button>
@@ -81,18 +96,20 @@
                                     </form>
                                 @endif
                                 <flux:menu.separator />
+                                <flux:menu.item icon="clipboard-document-list" x-on:click="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>alert('Link copied'))">Copy Link</flux:menu.item>
+                                <flux:menu.separator />
                                 <flux:menu.item icon="flag" x-on:click="alert('Report coming soon')">Report</flux:menu.item>
                             </flux:menu>
                         </flux:dropdown>
-                        <flux:button
-                            icon="clipboard-document-list"
-                            variant="outline"
-                            size="sm"
-                            x-on:click="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>alert('Link copied'))"
-                            title="{{ __('Copy link') }}"
-                        >
-                            {{ __('Copy Link') }}
-                        </flux:button>
+                        @php
+                            $isFollowing = auth()->check() && auth()->user()->hasFollowedId($user->id);
+                            $theyFollowMe = auth()->check() && $user->hasFollowedId(auth()->id());
+                        @endphp
+                        @if($isFollowing)
+                            <flux:button variant="outline" size="sm" wire:click="unfollow">Following</flux:button>
+                        @else
+                            <flux:button variant="primary" size="sm" wire:click="follow">{{ $theyFollowMe ? 'Follow Back' : 'Follow' }}</flux:button>
+                        @endif
                     @endif
                 @else
                     <flux:button
@@ -104,12 +121,13 @@
                     >
                         {{ __('Copy Link') }}
                     </flux:button>
-                    <a href="{{ route('login', ['redirect' => ltrim(url()->current(), '/')]) }}" class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86l-7.38 12.78A2 2 0 0 0 4.53 20h14.94a2 2 0 0 0 1.73-3.36L13.82 3.86a2 2 0 0 0-3.53 0z" />
-                        </svg>
-                        Report
-                    </a>
+                    <flux:menu.separator />
+                    <flux:button 
+                        variant="primary" 
+                        size="sm"
+                        href="{{ route('login', ['redirect' => ltrim(url()->current(), '/')]) }}">
+                        Follow
+                    </flux:button>
                 @endauth
             </div>
             @endif
@@ -132,9 +150,23 @@
                     @endif
                 </div>
                 <div class="mt-1 flex items-center gap-4 text-xs text-gray-600 dark:text-gray-300">
-                    <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($commentsTotal)</span> Comments</span>
-                    <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($viewsTotal)</span> Views</span>
                     <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($postsCount)</span> Posts</span>
+                    @auth
+                        @if(auth()->id() === $user->id)
+                            <a href="{{ route('user.followers', ['id' => $user->id]) }}" wire:navigate class="hover:underline">
+                                <span class="font-semibold text-gray-900 dark:text-white">@format_count($followersTotal)</span> Followers
+                            </a>
+                            <a href="{{ route('user.following', ['id' => $user->id]) }}" wire:navigate class="hover:underline">
+                                <span class="font-semibold text-gray-900 dark:text-white">@format_count($followingTotal)</span> Following
+                            </a>
+                        @else
+                            <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($followersTotal)</span> Followers</span>
+                            <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($followingTotal)</span> Following</span>
+                        @endif
+                    @else
+                        <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($followersTotal)</span> Followers</span>
+                        <span><span class="font-semibold text-gray-900 dark:text-white">@format_count($followingTotal)</span> Following</span>
+                    @endauth
                 </div>
                 @if($user->bio)
                     <p dir="auto" class="mt-2 text-sm text-gray-700 dark:text-gray-300">{{ $user->bio }}</p>
@@ -190,18 +222,20 @@
                                         </form>
                                     @endif
                                     <flux:menu.separator />
+                                    <flux:menu.item icon="clipboard-document-list" x-on:click="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>alert('Link copied'))">Copy Link</flux:menu.item>
+                                    <flux:menu.separator />
                                     <flux:menu.item icon="flag" x-on:click="alert('Report coming soon')">Report</flux:menu.item>
                                 </flux:menu>
                             </flux:dropdown>
-                            <flux:button
-                                icon="clipboard-document-list"
-                                variant="outline"
-                                size="sm"
-                                x-on:click="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>alert('Link copied'))"
-                                title="{{ __('Copy link') }}"
-                            >
-                                {{ __('Copy Link') }}
-                            </flux:button>
+                            @php
+                                $isFollowing = auth()->check() && auth()->user()->hasFollowedId($user->id);
+                                $theyFollowMe = auth()->check() && $user->hasFollowedId(auth()->id());
+                            @endphp
+                            @if($isFollowing)
+                                <flux:button variant="outline" size="sm" wire:click="unfollow">Following</flux:button>
+                            @else
+                                <flux:button variant="primary" size="sm" wire:click="follow">{{ $theyFollowMe ? 'Follow Back' : 'Follow' }}</flux:button>
+                            @endif
                         @endif
                     @else
                         <flux:button
@@ -213,12 +247,13 @@
                         >
                             {{ __('Copy Link') }}
                         </flux:button>
-                        <a href="{{ route('login', ['redirect' => ltrim(url()->current(), '/')]) }}" class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300 text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86l-7.38 12.78A2 2 0 0 0 4.53 20h14.94a2 2 0 0 0 1.73-3.36L13.82 3.86a2 2 0 0 0-3.53 0z" />
-                            </svg>
-                            Report
-                        </a>
+                        <flux:menu.separator />
+                        <flux:button 
+                        variant="primary" 
+                        size="sm"
+                        href="{{ route('login', ['redirect' => ltrim(url()->current(), '/')]) }}">
+                        Follow
+                       </flux:button>
                     @endauth
                 </div>
                 @endif

@@ -66,6 +66,10 @@
                             @if(!$n->post && $n->post_id)
                                 <span class="text-gray-600 dark:text-gray-400">(Post #{{ $n->post_id }})</span>
                             @endif
+                        @elseif($n->type === 'user_follow')
+                            <span class="font-medium">started following you</span>
+                        @elseif($n->type === 'user_follow_back')
+                            <span class="font-medium">followed you back</span>
                         @elseif($n->type === 'email_change_requested')
                             <span class="font-medium text-yellow-600 dark:text-yellow-400">Email change requested</span>
                             <span class="text-gray-600 dark:text-gray-400">Please confirm via the link sent to your new email.</span>

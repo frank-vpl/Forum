@@ -26,6 +26,10 @@ class UserProfile extends Component
 
     public int $commentsTotal = 0;
 
+    public int $followersTotal = 0;
+
+    public int $followingTotal = 0;
+
     public function mount(int $userId): void
     {
         $this->userId = $userId;
@@ -33,6 +37,8 @@ class UserProfile extends Component
         $this->postsCount = Post::where('user_id', $this->userId)->count();
         $this->viewsTotal = PostView::whereHas('post', fn ($q) => $q->where('user_id', $this->userId))->count();
         $this->commentsTotal = Comment::whereHas('post', fn ($q) => $q->where('user_id', $this->userId))->count();
+        $this->followersTotal = $this->user->followers()->count();
+        $this->followingTotal = $this->user->follows()->count();
     }
 
     public function render()
@@ -64,6 +70,8 @@ class UserProfile extends Component
             'postsCount' => $this->postsCount,
             'viewsTotal' => $this->viewsTotal,
             'commentsTotal' => $this->commentsTotal,
+            'followersTotal' => $this->followersTotal,
+            'followingTotal' => $this->followingTotal,
             'likedPostIds' => $likedPostIds,
             'blockedBy' => $blockedBy,
             'hasBlocked' => $hasBlocked,
@@ -114,6 +122,55 @@ class UserProfile extends Component
             }
         }
         // Livewire will re-render; counts and liked state refresh automatically
+    }
+
+    public function follow(): void
+    {
+        if (! Auth::check() || Auth::id() === $this->userId) {
+            return;
+        }
+        $me = Auth::user();
+        if ($me->hasBlockedId($this->userId) || $me->isBlockedById($this->userId)) {
+            return;
+        }
+        if (! $me->hasFollowedId($this->userId)) {
+            $isReciprocal = User::whereKey($this->userId)->first()?->hasFollowedId(Auth::id()) ?? false;
+            $me->follows()->attach($this->userId);
+            if ($isReciprocal) {
+                \App\Models\Notification::create([
+                    'user_id' => $this->userId,
+                    'actor_id' => Auth::id(),
+                    'type' => 'user_follow_back',
+                    'post_id' => null,
+                    'comment_id' => null,
+                ]);
+            } else {
+                \App\Models\Notification::create([
+                    'user_id' => $this->userId,
+                    'actor_id' => Auth::id(),
+                    'type' => 'user_follow',
+                    'post_id' => null,
+                    'comment_id' => null,
+                ]);
+            }
+        }
+        $this->followersTotal = User::find($this->userId)?->followers()->count() ?? 0;
+    }
+
+    public function unfollow(): void
+    {
+        if (! Auth::check() || Auth::id() === $this->userId) {
+            return;
+        }
+        $me = Auth::user();
+        if ($me->hasFollowedId($this->userId)) {
+            $me->follows()->detach($this->userId);
+            Notification::whereIn('type', ['user_follow', 'user_follow_back'])
+                ->where('user_id', $this->userId)
+                ->where('actor_id', Auth::id())
+                ->delete();
+        }
+        $this->followersTotal = User::find($this->userId)?->followers()->count() ?? 0;
     }
 
     private function recordUniqueViewFor(int $postId): void

@@ -168,6 +168,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(User::class, 'user_blocks', 'blocked_id', 'blocker_id')->withTimestamps();
     }
 
+    public function follows(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_follows', 'follower_id', 'followed_id')->withTimestamps();
+    }
+
+    public function followers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_follows', 'followed_id', 'follower_id')->withTimestamps();
+    }
+
     public function hasBlockedId(int $userId): bool
     {
         return $this->blocks()->where('users.id', $userId)->exists();
@@ -176,5 +186,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isBlockedById(int $userId): bool
     {
         return $this->blockedBy()->where('users.id', $userId)->exists();
+    }
+
+    public function hasFollowedId(int $userId): bool
+    {
+        return $this->follows()->where('users.id', $userId)->exists();
+    }
+
+    public function isFollowedById(int $userId): bool
+    {
+        return $this->followers()->where('users.id', $userId)->exists();
     }
 }

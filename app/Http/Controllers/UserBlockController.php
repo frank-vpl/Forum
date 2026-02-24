@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,12 @@ class UserBlockController
         if (! $me->hasBlockedId($target->id)) {
             $me->blocks()->attach($target->id);
         }
+        $me->follows()->detach($target->id);
+        $target->follows()->detach($me->id);
+        Notification::whereIn('type', ['user_follow', 'user_follow_back'])
+            ->whereIn('user_id', [$me->id, $target->id])
+            ->whereIn('actor_id', [$me->id, $target->id])
+            ->delete();
 
         return redirect()->route('user.show', ['id' => $id]);
     }
@@ -40,4 +47,3 @@ class UserBlockController
         return redirect()->route('user.show', ['id' => $id]);
     }
 }
-

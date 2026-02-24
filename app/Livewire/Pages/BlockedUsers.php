@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Pages;
 
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -43,10 +42,10 @@ class BlockedUsers extends Component
     {
         $me = Auth::user();
         $query = $me->blocks()
-            ->when(!empty($this->search), function ($q) {
+            ->when(! empty($this->search), function ($q) {
                 $q->where(function ($qq) {
                     $qq->where('name', 'like', '%'.$this->search.'%')
-                       ->orWhere('email', 'like', '%'.$this->search.'%');
+                        ->orWhere('email', 'like', '%'.$this->search.'%');
                 });
             })
             ->orderBy('user_blocks.created_at', 'desc');

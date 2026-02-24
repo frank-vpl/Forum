@@ -16,10 +16,15 @@ class PostsList extends Component
     use WithPagination;
 
     public string $filter = 'news';
+
     public string $search = '';
+
     public int $page = 1;
+
     public int $perPage = 12;
+
     public bool $loadingMore = false;
+
     public ?string $loadError = null;
 
     public function mount(): void
@@ -59,6 +64,12 @@ class PostsList extends Component
         }
     }
 
+    public function reportLoadError(): void
+    {
+        $this->loadError = 'client-error';
+        $this->loadingMore = false;
+    }
+
     public function render()
     {
         $query = Post::with('user')
@@ -68,12 +79,20 @@ class PostsList extends Component
             $currentId = Auth::id();
             $query->whereDoesntHave('user', function ($q) use ($currentId) {
                 $q->whereHas('blocks', fn ($qq) => $qq->whereKey($currentId))
-                  ->orWhereHas('blockedBy', fn ($qq) => $qq->whereKey($currentId));
+                    ->orWhereHas('blockedBy', fn ($qq) => $qq->whereKey($currentId));
             });
         }
 
         // Subset restriction by filter
         switch ($this->filter) {
+            case 'following':
+                if (Auth::check()) {
+                    $currentId = Auth::id();
+                    $query->whereHas('user.followers', fn ($q) => $q->whereKey($currentId));
+                } else {
+                    $query->whereRaw('1 = 0');
+                }
+                break;
             case 'verified_users':
                 $query->whereHas('user', fn ($q) => $q->whereIn('status', ['admin', 'verified']));
                 break;
@@ -93,7 +112,7 @@ class PostsList extends Component
             $s = $this->search;
             $query->where(function ($q) use ($s) {
                 $q->where('title', 'like', '%'.$s.'%')
-                  ->orWhereHas('user', fn ($qq) => $qq->where('name', 'like', '%'.$s.'%'));
+                    ->orWhereHas('user', fn ($qq) => $qq->where('name', 'like', '%'.$s.'%'));
             });
         }
 
@@ -104,6 +123,9 @@ class PostsList extends Component
                 break;
             case 'most_views':
                 $query->orderByDesc('views_count');
+                break;
+            case 'following':
+                $query->orderByDesc('created_at');
                 break;
             case 'verified_users':
                 $query->orderByDesc('created_at');

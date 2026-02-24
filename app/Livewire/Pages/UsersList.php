@@ -12,6 +12,7 @@ class UsersList extends Component
     use WithPagination;
 
     public string $filter = 'default';
+
     public $search = '';
 
     protected $queryString = [
@@ -39,11 +40,19 @@ class UsersList extends Component
             ->when(Auth::check(), function ($q) {
                 $currentId = Auth::id();
                 $q->whereDoesntHave('blockedBy', fn ($qq) => $qq->whereKey($currentId))
-                  ->whereDoesntHave('blocks', fn ($qq) => $qq->whereKey($currentId));
+                    ->whereDoesntHave('blocks', fn ($qq) => $qq->whereKey($currentId));
             });
 
         // Apply filter constraints (subset selection)
         switch ($this->filter) {
+            case 'following':
+                if (Auth::check()) {
+                    $currentId = Auth::id();
+                    $usersQuery->whereHas('followers', fn ($q) => $q->whereKey($currentId));
+                } else {
+                    $usersQuery->whereRaw('1 = 0');
+                }
+                break;
             case 'verified':
                 $usersQuery->whereIn('status', ['admin', 'verified']);
                 break;
@@ -70,6 +79,9 @@ class UsersList extends Component
         switch ($this->filter) {
             case 'latest':
                 $usersQuery->orderBy('created_at', 'desc');
+                break;
+            case 'following':
+                $usersQuery->orderBy('name', 'asc');
                 break;
             case 'name':
                 $usersQuery->orderBy('name', 'asc');

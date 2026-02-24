@@ -64,12 +64,24 @@ class PostCreate extends Component
                 ]);
             }
         } else {
-            $post = Post::create([
-                'user_id' => Auth::id(),
-                'title' => trim($this->title),
-                'category' => trim($this->category),
-                'content' => $this->content,
-            ]);
+            $trimTitle = trim($this->title);
+            $trimCategory = trim($this->category);
+            $existing = Post::where('user_id', Auth::id())
+                ->where('title', $trimTitle)
+                ->where('category', $trimCategory)
+                ->where('content', $this->content)
+                ->where('created_at', '>=', now()->subMinute())
+                ->first();
+            if ($existing) {
+                $post = $existing;
+            } else {
+                $post = Post::create([
+                    'user_id' => Auth::id(),
+                    'title' => $trimTitle,
+                    'category' => $trimCategory,
+                    'content' => $this->content,
+                ]);
+            }
         }
 
         $this->redirect(url('/forum/'.$post->id), navigate: true);

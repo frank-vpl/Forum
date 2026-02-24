@@ -4,7 +4,12 @@ use App\Concerns\ProfileValidationRules;
 use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
+use App\Notifications\VerifyEmailChange;
+use App\Models\Notification as DbNotification;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -39,15 +44,135 @@ new class extends Component {
 
         $validated = $this->validate($this->profileRules($user->id));
 
+        $originalEmail = $user->email;
         $user->fill($validated);
 
         if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
+            $newEmail = $user->email;
+            if (!config('auth.require_email_verification')) {
+                $user->email = $newEmail;
+                $user->email_verified_at = now();
+                $user->pending_email = null;
+                $user->pending_email_token = null;
+                $user->pending_email_requested_at = null;
+            } else {
+                $user->email = $originalEmail;
+                $token = Str::random(64);
+                $user->pending_email = $newEmail;
+                $user->pending_email_token = $token;
+                $user->pending_email_requested_at = now();
+            }
         }
 
         $user->save();
 
+        if (!config('auth.require_email_verification') && $user->wasChanged('email')) {
+            Session::flash('status', 'email-changed');
+            Session::flash('status_color', 'green');
+        } elseif (! empty($user->pending_email ?? null) && ! empty($user->pending_email_token ?? null)) {
+            $url = URL::temporarySignedRoute(
+                'email.change.verify',
+                now()->addMinutes(60),
+                ['id' => $user->getKey(), 'token' => $user->pending_email_token]
+            );
+
+            Notification::route('mail', $user->pending_email)
+                ->notify(new VerifyEmailChange($url));
+
+            DbNotification::create([
+                'user_id' => $user->id,
+                'actor_id' => Auth::id(),
+                'type' => 'email_change_requested',
+                'post_id' => null,
+                'comment_id' => null,
+            ]);
+
+            Session::flash('status', 'email-change-link-sent');
+            Session::flash('status_color', 'yellow');
+        }
+
         $this->dispatch('profile-updated', name: $user->name);
+    }
+
+    public function resendPendingEmailChange(): void
+    {
+        $user = Auth::user();
+        if (empty($user->pending_email)) {
+            return;
+        }
+        $user->pending_email_token = Str::random(64);
+        $user->pending_email_requested_at = now();
+        $user->save();
+
+        $url = URL::temporarySignedRoute(
+            'email.change.verify',
+            now()->addMinutes(60),
+            ['id' => $user->getKey(), 'token' => $user->pending_email_token]
+        );
+
+        Notification::route('mail', $user->pending_email)
+            ->notify(new VerifyEmailChange($url));
+
+        DbNotification::create([
+            'user_id' => $user->id,
+            'actor_id' => Auth::id(),
+            'type' => 'email_change_requested',
+            'post_id' => null,
+            'comment_id' => null,
+        ]);
+
+        Session::flash('status', 'email-change-link-sent');
+    }
+
+    public function cancelPendingEmailChange(): void
+    {
+        $user = Auth::user();
+        if (empty($user->pending_email)) {
+            return;
+        }
+        $user->pending_email = null;
+        $user->pending_email_token = null;
+        $user->pending_email_requested_at = null;
+        $user->save();
+
+        DbNotification::create([
+            'user_id' => $user->id,
+            'actor_id' => Auth::id(),
+            'type' => 'email_change_canceled',
+            'post_id' => null,
+            'comment_id' => null,
+        ]);
+
+        Session::flash('status', 'email-change-canceled');
+    }
+
+    #[Computed]
+    public function pendingEmail(): ?string
+    {
+        return Auth::user()->pending_email;
+    }
+
+    #[Computed]
+    public function pendingEmailMinutesLeft(): ?int
+    {
+        $at = Auth::user()->pending_email_requested_at;
+        if (! $at) {
+            return null;
+        }
+        $elapsed = now()->diffInMinutes($at);
+        return max(0, 60 - $elapsed);
+    }
+
+    #[Computed]
+    public function pendingEmailSecondsLeft(): ?int
+    {
+        $at = Auth::user()->pending_email_requested_at;
+        if (! $at) {
+            return null;
+        }
+        $expiry = $at->copy()->addMinutes(60);
+        $left = max(0, $expiry->getTimestamp() - now()->getTimestamp());
+        return (int) $left;
     }
 
     /**
@@ -101,6 +226,74 @@ new class extends Component {
 
             <div>
                 <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />
+
+                @if ($this->pendingEmail)
+                    @php($secLeft = (int) ($this->pendingEmailSecondsLeft ?? 0))
+                    @php($expired = $secLeft <= 0)
+                    <div id="email-change-card" class="{{ $expired ? 'mt-3 rounded-lg border border-red-600 bg-red-50 p-3 text-red-700 dark:border-red-700 dark:bg-red-900/30 dark:text-red-200' : 'mt-3 rounded-lg border border-yellow-300 bg-yellow-50 p-3 text-yellow-900 dark:border-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-200' }}">
+                        <div class="text-sm">
+                            <span class="font-medium">Email change pending:</span>
+                            <span>{{ $this->pendingEmail }}</span>
+                        </div>
+                        <div class="mt-1 text-xs opacity-90">
+                            Expires in
+                            <span id="email-change-countdown" data-seconds="{{ $this->pendingEmailSecondsLeft }}" data-exp="{{ optional(Auth::user()->pending_email_requested_at)?->copy()->addMinutes(60)?->toIso8601String() }}">
+                                @php($secLeft = (int) ($this->pendingEmailSecondsLeft ?? 0))
+                                @php($minLeft = intdiv($secLeft, 60))
+                                @php($secOnly = $secLeft % 60)
+                                {{ str_pad((string) $minLeft, 2, '0', STR_PAD_LEFT) }}:{{ str_pad((string) $secOnly, 2, '0', STR_PAD_LEFT) }}
+                            </span>
+                        </div>
+                        <div id="email-change-note" class="mt-1 text-xs opacity-90">
+                            @if($expired)
+                                Link expired. Resend to get a new verification link or cancel.
+                            @else
+                                You can resend a new verification link or cancel this change.
+                            @endif
+                        </div>
+                        <div class="mt-2 flex gap-2">
+                            <flux:button id="email-change-resend" size="sm" variant="outline" wire:click="resendPendingEmailChange">Resend</flux:button>
+                            <flux:button id="email-change-cancel" size="sm" variant="ghost" wire:click="cancelPendingEmailChange">Cancel</flux:button>
+                        </div>
+                        <script>
+                            (function(){
+                                var el = document.getElementById('email-change-countdown');
+                                if (!el || el._bound) return;
+                                el._bound = true;
+                                function calcLeft(){
+                                    var exp = el.dataset.exp;
+                                    if (!exp) return parseInt(el.dataset.seconds || '0', 10);
+                                    var msLeft = (new Date(exp)).getTime() - Date.now();
+                                    return Math.max(0, Math.floor(msLeft / 1000));
+                                }
+                                var s = calcLeft();
+                                var resend = document.getElementById('email-change-resend');
+                                var cancel = document.getElementById('email-change-cancel');
+                                var card = document.getElementById('email-change-card');
+                                var note = document.getElementById('email-change-note');
+                                var redClasses = 'mt-3 rounded-lg border border-red-600 bg-red-50 p-3 text-red-700 dark:border-red-700 dark:bg-red-900/30 dark:text-red-200';
+                                var yellowClasses = 'mt-3 rounded-lg border border-yellow-300 bg-yellow-50 p-3 text-yellow-900 dark:border-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-200';
+                                function step(){
+                                    if (s <= 0) {
+                                        el.textContent = 'Expired';
+                                        if (cancel) cancel.disabled = false;
+                                        if (resend) resend.disabled = false;
+                                        if (card) card.className = redClasses;
+                                        if (note) note.textContent = 'Link expired. Resend to get a new verification link or cancel.';
+                                        return;
+                                    }
+                                    s = calcLeft();
+                                    var m = Math.floor(s / 60);
+                                    var sec = s % 60;
+                                    if (m > 60) m = 60;
+                                    el.textContent = String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+                                    setTimeout(step, 1000);
+                                }
+                                step();
+                            })();
+                        </script>
+                    </div>
+                @endif
 
                 @if ($this->hasUnverifiedEmail)
                     <div>

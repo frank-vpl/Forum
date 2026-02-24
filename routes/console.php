@@ -1,8 +1,8 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
-use App\Models\User;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -13,6 +13,7 @@ Artisan::command('users:verify-old {--dry}', function () {
     $count = User::whereNull('email_verified_at')->count();
     if ($dry) {
         $this->info("Found {$count} unverified users. Dry run: no changes made.");
+
         return;
     }
     $updated = User::whereNull('email_verified_at')->update(['email_verified_at' => now()]);

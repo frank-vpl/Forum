@@ -5,43 +5,52 @@
             <p class="text-gray-600 dark:text-gray-400">Latest discussions from the community</p>
             <div class="mt-2 flex items-center gap-2 flex-wrap">
                 <span class="text-sm text-gray-600 dark:text-gray-400">Filter:</span>
-                <select wire:model.live="filter" class="rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white px-2.5 py-1.5 sm:hidden">
-                    <option value="news">Latest</option>
-                    <option value="most_likes">Popular</option>
-                    <option value="most_views">Trending</option>
-                    <option value="verified_users">Verified</option>
-                    <option value="admin_posts">Official</option>
-                </select>
-                <div class="hidden sm:inline-flex rounded-lg border border-gray-300 dark:border-gray-700 overflow-hidden">
-                    <button type="button" wire:click="$set('filter','news')"
-                        class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'news' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                        Latest
-                    </button>
-                    <button type="button" wire:click="$set('filter','most_likes')"
-                        class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'most_likes' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                        Popular
-                    </button>
-                    <button type="button" wire:click="$set('filter','most_views')"
-                        class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'most_views' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                        Trending
-                    </button>
-                    <button type="button" wire:click="$set('filter','verified_users')"
-                        class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'verified_users' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                        Verified
-                    </button>
-                    <button type="button" wire:click="$set('filter','admin_posts')"
-                        class="px-3 py-1.5 text-sm {{ ($filter ?? 'news') === 'admin_posts' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                        Official
-                    </button>
+                <div class="hidden sm:block">
+                    <flux:radio.group variant="segmented" wire:model.live="filter">
+                        <flux:radio value="news">Latest</flux:radio>
+                        <flux:radio value="most_likes">Popular</flux:radio>
+                        <flux:radio value="most_views">Trending</flux:radio>
+                        <flux:radio value="verified_users">Verified</flux:radio>
+                        <flux:radio value="admin_posts">Official</flux:radio>
+                    </flux:radio.group>
+                </div>
+                <div class="sm:hidden">
+                    <flux:dropdown>
+                        <flux:button variant="primary" icon:trailing="chevron-down">
+                            {{ $filter === 'news' ? 'Latest' : ($filter === 'most_likes' ? 'Popular' : ($filter === 'most_views' ? 'Trending' : ($filter === 'verified_users' ? 'Verified' : 'Official'))) }}
+                        </flux:button>
+                        <flux:menu>
+                            <flux:menu.radio.group wire:model.live="filter">
+                                <flux:menu.radio value="news">Latest</flux:menu.radio>
+                                <flux:menu.radio value="most_likes">Popular</flux:menu.radio>
+                                <flux:menu.radio value="most_views">Trending</flux:menu.radio>
+                                <flux:menu.radio value="verified_users">Verified</flux:menu.radio>
+                                <flux:menu.radio value="admin_posts">Official</flux:menu.radio>
+                            </flux:menu.radio.group>
+                        </flux:menu>
+                    </flux:dropdown>
                 </div>
             </div>
         </div>
-        <a href="{{ url('/new') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+        <a href="{{ url('/new') }}" class="hidden sm:inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
             </svg>
             New
         </a>
+    </div>
+    <div class="mb-6 max-w-md">
+        <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <flux:icon name="magnifying-glass" class="w-4 h-4 text-gray-500" />
+            </div>
+            <input
+                type="text"
+                wire:model.live.debounce.300ms="search"
+                class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Search posts by title or user name..."
+            >
+        </div>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -85,19 +94,29 @@
                     <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300 mt-auto">
                         <div class="flex items-center gap-3">
                             @php($liked = in_array($post->id, $likedPostIds ?? []))
-                            <button
-                                type="button"
-                                wire:click="toggleLike({{ $post->id }})"
-                                wire:loading.class="opacity-50"
-                                wire:target="toggleLike"
-                                class="inline-flex items-center gap-1 {{ $liked ? 'text-red-600' : 'hover:text-red-600' }}"
-                                title="{{ $liked ? 'Unlike' : 'Like' }}"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform" viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
-                                </svg>
-                                @format_count($post->likes_count)
-                            </button>
+                            @php($blockedLike = auth()->check() && ($post->user_id) && (auth()->user()->hasBlockedId($post->user_id) || auth()->user()->isBlockedById($post->user_id)))
+                            @if(! $blockedLike)
+                                <button
+                                    type="button"
+                                    wire:click="toggleLike({{ $post->id }})"
+                                    wire:loading.class="opacity-50"
+                                    wire:target="toggleLike"
+                                    class="inline-flex items-center gap-1 {{ $liked ? 'text-red-600' : 'hover:text-red-600' }}"
+                                    title="{{ $liked ? 'Unlike' : 'Like' }}"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform" viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
+                                    </svg>
+                                    @format_count($post->likes_count)
+                                </button>
+                            @else
+                                <span class="inline-flex items-center gap-1 text-gray-400 dark:text-gray-500" title="Likes disabled">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
+                                    </svg>
+                                    @format_count($post->likes_count)
+                                </span>
+                            @endif
                         </div>
                         <div class="flex items-center gap-4">
                             <a href="{{ url('/forum/'.$post->id) }}" class="inline-flex items-center gap-1 hover:text-blue-600">
@@ -128,9 +147,73 @@
         @endforelse
     </div>
 
-    @if($posts->hasPages())
-        <div class="mt-8 flex justify-center">
-            {{ $posts->links('vendor.pagination.tailwind') }}
+    @if($hasMore)
+        <div
+            x-data="{ busy: false }"
+            x-init="(function(){ const fn = () => { if (busy) return; const near = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200; if (near) { busy = true; $wire.loadMore().then(() => { busy = false; }); } }; window.addEventListener('scroll', fn); })()"
+            class="mt-6"
+        >
+            @if($loadingMore)
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+                        <flux:skeleton.group animate="shimmer">
+                            <flux:skeleton.line class="mb-2 w-1/4" />
+                            <flux:skeleton.line />
+                            <flux:skeleton.line />
+                            <flux:skeleton.line class="w-3/4" />
+                        </flux:skeleton.group>
+                        <div class="mt-4">
+                            <flux:skeleton.group animate="shimmer" class="flex items-center gap-4">
+                                <flux:skeleton class="size-10 rounded-full" />
+                                <div class="flex-1">
+                                    <flux:skeleton.line />
+                                    <flux:skeleton.line class="w-1/2" />
+                                </div>
+                            </flux:skeleton.group>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+                        <flux:skeleton.group animate="shimmer">
+                            <flux:skeleton.line class="mb-2 w-1/4" />
+                            <flux:skeleton.line />
+                            <flux:skeleton.line />
+                            <flux:skeleton.line class="w-3/4" />
+                        </flux:skeleton.group>
+                        <div class="mt-4">
+                            <flux:skeleton.group animate="shimmer" class="flex items-center gap-4">
+                                <flux:skeleton class="size-10 rounded-full" />
+                                <div class="flex-1">
+                                    <flux:skeleton.line />
+                                    <flux:skeleton.line class="w-1/2" />
+                                </div>
+                            </flux:skeleton.group>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+                        <flux:skeleton.group animate="shimmer">
+                            <flux:skeleton.line class="mb-2 w-1/4" />
+                            <flux:skeleton.line />
+                            <flux:skeleton.line />
+                            <flux:skeleton.line class="w-3/4" />
+                        </flux:skeleton.group>
+                        <div class="mt-4">
+                            <flux:skeleton.group animate="shimmer" class="flex items-center gap-4">
+                                <flux:skeleton class="size-10 rounded-full" />
+                                <div class="flex-1">
+                                    <flux:skeleton.line />
+                                    <flux:skeleton.line class="w-1/2" />
+                                </div>
+                            </flux:skeleton.group>
+                        </div>
+                    </div>
+                </div>
+            @elseif($loadError)
+                <div class="mt-6 flex justify-center">
+                    <flux:button variant="outline" icon="arrow-path" wire:click="loadMore">
+                        Retry loading next page
+                    </flux:button>
+                </div>
+            @endif
         </div>
     @endif
 </div>

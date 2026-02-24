@@ -5,14 +5,22 @@
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Comments</h2>
 
         @auth
-            <div class="mb-6">
-                <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Add a comment</label>
-                <div class="flex items-start gap-3">
-                    <textarea dir="auto" wire:model.defer="newComment" rows="3" class="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Write a comment..."></textarea>
-                    <button wire:click="addRoot" class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">Comment</button>
+            @if(!($blockedInteractions ?? false))
+                <div class="mb-6">
+                    <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Add a comment</label>
+                    <div class="flex items-start gap-3">
+                        <textarea dir="auto" wire:model.defer="newComment" rows="3" class="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Write a comment..."></textarea>
+                        <button wire:click="addRoot" class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">Comment</button>
+                    </div>
+                    @error('newComment') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>
-                @error('newComment') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-            </div>
+            @else
+                <div class="mb-6">
+                    <div class="rounded-lg border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 px-4 py-3 text-sm text-yellow-700 dark:text-yellow-300">
+                        Comments are disabled due to blocking between accounts.
+                    </div>
+                </div>
+            @endif
         @else
             <div class="mb-6">
                 <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
@@ -29,7 +37,7 @@
 
         <div class="space-y-5">
             @forelse($roots as $comment)
-                @include('pages.forum.post-comments-item', ['comment' => $comment, 'postId' => $postId ?? $comment->post_id])
+                @include('pages.forum.post-comments-item', ['comment' => $comment, 'postId' => $postId ?? $comment->post_id, 'postOwnerId' => $postOwnerId ?? null])
             @empty
                 <p class="text-sm text-gray-600 dark:text-gray-400">No comments yet. Be the first to comment.</p>
             @endforelse

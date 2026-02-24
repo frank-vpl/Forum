@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'not.banned' => \App\Http\Middleware\EnsureUserIsNotBanned::class,
         ]);
         $middleware->appendToGroup('web', \App\Http\Middleware\PersistAuthRedirect::class);
+        $middleware->appendToGroup('web', \App\Http\Middleware\CheckPendingEmailExpiration::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e, $request) {

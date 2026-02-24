@@ -36,20 +36,30 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
+                        @php($blockedLike = auth()->check() && ($post->user_id) && (auth()->user()->hasBlockedId($post->user_id) || auth()->user()->isBlockedById($post->user_id)))
                         @auth
-                        <button type="button" wire:click="toggleLike" class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs {{ $liked ? 'text-red-600' : 'text-gray-700 dark:text-gray-300' }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
-                            </svg>
-                            {{ $this->formatCount($likesCount) }}
-                        </button>
+                            @if(! $blockedLike)
+                                <button type="button" wire:click="toggleLike" class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs {{ $liked ? 'text-red-600' : 'text-gray-700 dark:text-gray-300' }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
+                                    </svg>
+                                    {{ $this->formatCount($likesCount) }}
+                                </button>
+                            @else
+                                <span class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs text-gray-400 dark:text-gray-500" title="Likes disabled">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0  0 1 9 3c0 4.5-4.5 8-9 11z" />
+                                    </svg>
+                                    {{ $this->formatCount($likesCount) }}
+                                </span>
+                            @endif
                         @else
-                        <span class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs {{ $liked ? 'text-red-600' : 'text-gray-700 dark:text-gray-300' }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
-                            </svg>
-                            {{ $this->formatCount($likesCount) }}
-                        </span>
+                            <span class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs {{ $liked ? 'text-red-600' : 'text-gray-700 dark:text-gray-300' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
+                                </svg>
+                                {{ $this->formatCount($likesCount) }}
+                            </span>
                         @endauth
                         <span class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs text-gray-700 dark:text-gray-300">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -123,13 +133,22 @@
         </div>
 
         <div class="mt-6 flex items-center gap-3">
+            @php($blockedLike = auth()->check() && ($post->user_id) && (auth()->user()->hasBlockedId($post->user_id) || auth()->user()->isBlockedById($post->user_id)))
             @auth
-                <button wire:click="toggleLike" class="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm
-                    {{ $liked ? 'border-red-600 bg-red-50 text-red-700 dark:bg-red-900/30' : 'border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-300' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.1-4.5-4.688-4.5-1.862 0-3.48 1.124-4.312 2.744C11.168 4.874 9.55 3.75 7.688 3.75 5.1 3.75 3 5.765 3 8.25c0 7.125 9 12 9 12s9-4.875 9-12z" />
-                    </svg>
-                </button>
+                @if(! $blockedLike)
+                    <button wire:click="toggleLike" class="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm
+                        {{ $liked ? 'border-red-600 bg-red-50 text-red-700 dark:bg-red-900/30' : 'border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-300' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.1-4.5-4.688-4.5-1.862 0-3.48 1.124-4.312 2.744C11.168 4.874 9.55 3.75 7.688 3.75 5.1 3.75 3 5.765 3 8.25c0 7.125 9 12 9 12s9-4.875 9-12z" />
+                        </svg>
+                    </button>
+                @else
+                    <span class="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm text-gray-400 dark:text-gray-500" title="Likes disabled">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.1-4.5-4.688-4.5-1.862 0-3.48 1.124-4.312 2.744C11.168 4.874 9.55 3.75 7.688 3.75 5.1 3.75 3 5.765 3 8.25c0 7.125 9 12 9 12s9-4.875 9-12z" />
+                        </svg>
+                    </span>
+                @endif
             @else
                 <a href="{{ route('login') }}" class="text-blue-600 hover:underline">Log in to like</a>
             @endauth

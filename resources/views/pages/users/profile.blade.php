@@ -62,15 +62,28 @@
                             {{ __('Copy Link') }}
                         </flux:button>
                     @else
-                        <flux:button
-                            icon="flag"
-                            variant="outline"
-                            size="sm"
-                            x-on:click="alert('Report coming soon')"
-                            title="{{ __('Report') }}"
-                        >
-                            {{ __('Report') }}
-                        </flux:button>
+                        <flux:dropdown>
+                            <flux:button icon:trailing="chevron-down" variant="outline" size="sm">Options</flux:button>
+                            <flux:menu>
+                                @php
+                                    $blocked = ($hasBlocked ?? false) || ($blockedBy ?? false);
+                                @endphp
+                                @if($blocked)
+                                    <flux:menu.item icon="no-symbol" x-on:click="document.getElementById('unblock-form-desktop')?.submit()">Unblock</flux:menu.item>
+                                    <form id="unblock-form-desktop" action="{{ route('user.unblock', ['id' => $user->id]) }}" method="POST" class="hidden">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                @else
+                                    <flux:menu.item icon="no-symbol" x-on:click="document.getElementById('block-form-desktop')?.submit()">Block</flux:menu.item>
+                                    <form id="block-form-desktop" action="{{ route('user.block', ['id' => $user->id]) }}" method="POST" class="hidden">
+                                        @csrf
+                                    </form>
+                                @endif
+                                <flux:menu.separator />
+                                <flux:menu.item icon="flag" x-on:click="alert('Report coming soon')">Report</flux:menu.item>
+                            </flux:menu>
+                        </flux:dropdown>
                         <flux:button
                             icon="clipboard-document-list"
                             variant="outline"
@@ -158,15 +171,28 @@
                                 {{ __('Copy Link') }}
                             </flux:button>
                         @else
-                            <flux:button
-                                icon="flag"
-                                variant="outline"
-                                size="sm"
-                                x-on:click="alert('Report coming soon')"
-                                title="{{ __('Report') }}"
-                            >
-                                {{ __('Report') }}
-                            </flux:button>
+                            <flux:dropdown>
+                                <flux:button icon:trailing="chevron-down" variant="outline" size="sm">Options</flux:button>
+                                <flux:menu>
+                                    @php
+                                        $blocked = ($hasBlocked ?? false) || ($blockedBy ?? false);
+                                    @endphp
+                                    @if($blocked)
+                                        <flux:menu.item icon="no-symbol" x-on:click="document.getElementById('unblock-form-mobile')?.submit()">Unblock</flux:menu.item>
+                                        <form id="unblock-form-mobile" action="{{ route('user.unblock', ['id' => $user->id]) }}" method="POST" class="hidden">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
+                                    @else
+                                        <flux:menu.item icon="no-symbol" x-on:click="document.getElementById('block-form-mobile')?.submit()">Block</flux:menu.item>
+                                        <form id="block-form-mobile" action="{{ route('user.block', ['id' => $user->id]) }}" method="POST" class="hidden">
+                                            @csrf
+                                        </form>
+                                    @endif
+                                    <flux:menu.separator />
+                                    <flux:menu.item icon="flag" x-on:click="alert('Report coming soon')">Report</flux:menu.item>
+                                </flux:menu>
+                            </flux:dropdown>
                             <flux:button
                                 icon="clipboard-document-list"
                                 variant="outline"
@@ -203,6 +229,11 @@
     @if($user->isBanned())
         <div class="rounded-lg border border-red-200 bg-red-50 dark:border-red-800/60 dark:bg-red-900/20 p-4 text-red-700 dark:text-red-300">
             Posts are hidden because this account is banned.
+        </div>
+    @else
+    @if(($blockedBy ?? false) || ($hasBlocked ?? false))
+        <div class="rounded-lg border border-yellow-200 bg-yellow-50 dark:border-yellow-800/60 dark:bg-yellow-900/20 p-4 text-yellow-700 dark:text-yellow-300">
+            Posts are hidden because of blocking between accounts.
         </div>
     @else
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -246,19 +277,29 @@
                     <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300 mt-auto">
                         <div class="flex items-center gap-3">
                             @php($liked = in_array($post->id, $likedPostIds ?? []))
-                            <button
-                                type="button"
-                                wire:click="toggleLike({{ $post->id }})"
-                                wire:loading.class="opacity-50"
-                                wire:target="toggleLike"
-                                class="inline-flex items-center gap-1 {{ $liked ? 'text-red-600' : 'hover:text-red-600' }}"
-                                title="{{ $liked ? 'Unlike' : 'Like' }}"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform" viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
-                                </svg>
-                                @format_count($post->likes_count)
-                            </button>
+                            @php($blockedLike = auth()->check() && ($post->user_id) && (auth()->user()->hasBlockedId($post->user_id) || auth()->user()->isBlockedById($post->user_id)))
+                            @if(! $blockedLike)
+                                <button
+                                    type="button"
+                                    wire:click="toggleLike({{ $post->id }})"
+                                    wire:loading.class="opacity-50"
+                                    wire:target="toggleLike"
+                                    class="inline-flex items-center gap-1 {{ $liked ? 'text-red-600' : 'hover:text-red-600' }}"
+                                    title="{{ $liked ? 'Unlike' : 'Like' }}"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform" viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
+                                    </svg>
+                                    @format_count($post->likes_count)
+                                </button>
+                            @else
+                                <span class="inline-flex items-center gap-1 text-gray-400 dark:text-gray-500" title="Likes disabled">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
+                                    </svg>
+                                    @format_count($post->likes_count)
+                                </span>
+                            @endif
                         </div>
                         <div class="flex items-center gap-4">
                             <a href="{{ url('/forum/'.$post->id) }}" class="inline-flex items-center gap-1 hover:text-blue-600">
@@ -288,6 +329,7 @@
             </div>
         @endforelse
     </div>
+    @endif
     @endif
 
     @if($posts->hasPages())

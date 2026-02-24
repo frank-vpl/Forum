@@ -43,8 +43,17 @@
                     </flux:sidebar.item>
                     @endauth
                     <flux:sidebar.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>
-                        {{ __('Users') }}
+                        {{ __('Users Directory') }}
                     </flux:sidebar.item>
+                    @auth
+                    <flux:sidebar.item icon="no-symbol" :href="route('users.blocks')" :current="request()->routeIs('users.blocks')" wire:navigate>
+                        {{ __('Blocked Users') }}
+                    </flux:sidebar.item>
+                    @else
+                    <flux:sidebar.item icon="no-symbol" :href="route('login', ['redirect' => ltrim(route('users.blocks', absolute: false), '/')])" wire:navigate>
+                        {{ __('Blocked Users') }}
+                    </flux:sidebar.item>
+                    @endauth
                     <flux:sidebar.item icon="star" :href="route('premium.index')" wire:navigate>
                         {{ __('Premium') }}
                     </flux:sidebar.item>

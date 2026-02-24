@@ -11,17 +11,54 @@ class UsersList extends Component
 {
     use WithPagination;
 
+    public string $filter = 'default';
     public $search = '';
 
-    protected $queryString = ['search'];
+    protected $queryString = [
+        'search',
+        'filter' => ['except' => 'default'],
+    ];
+
+    public function mount(): void
+    {
+        $this->filter = Auth::user()?->users_filter ?? 'default';
+    }
+
+    public function updatedFilter(string $value): void
+    {
+        if (Auth::check()) {
+            User::whereKey(Auth::id())->update(['users_filter' => $value]);
+        }
+        $this->resetPage();
+    }
 
     public function render()
     {
         $usersQuery = User::query()
             ->when(! (Auth::user()?->isAdmin()), fn ($q) => $q->where('status', '!=', 'banned'))
-            ->orderBy('status', 'desc') // Order by status: admin, verified, user, banned
-            ->orderBy('name', 'asc'); // Then by name alphabetically
+            ->when(Auth::check(), function ($q) {
+                $currentId = Auth::id();
+                $q->whereDoesntHave('blockedBy', fn ($qq) => $qq->whereKey($currentId))
+                  ->whereDoesntHave('blocks', fn ($qq) => $qq->whereKey($currentId));
+            });
 
+        // Apply filter constraints (subset selection)
+        switch ($this->filter) {
+            case 'verified':
+                $usersQuery->whereIn('status', ['admin', 'verified']);
+                break;
+            case 'official':
+                $usersQuery->where('status', 'admin');
+                break;
+            case 'latest':
+            case 'name':
+            case 'default':
+            default:
+                // No subset restriction beyond base constraints
+                break;
+        }
+
+        // Apply search constraints (name/email), if provided
         if (! empty($this->search)) {
             $usersQuery->where(function ($query) {
                 $query->where('name', 'like', '%'.$this->search.'%')
@@ -29,10 +66,34 @@ class UsersList extends Component
             });
         }
 
+        // Apply ordering based on active filter (even when searching)
+        switch ($this->filter) {
+            case 'latest':
+                $usersQuery->orderBy('created_at', 'desc');
+                break;
+            case 'name':
+                $usersQuery->orderBy('name', 'asc');
+                break;
+            case 'verified':
+                $usersQuery->orderBy('name', 'asc');
+                break;
+            case 'official':
+                $usersQuery->orderBy('name', 'asc');
+                break;
+            case 'default':
+            default:
+                $usersQuery->orderBy('status', 'desc')->orderBy('name', 'asc');
+        }
+
         $users = $usersQuery->paginate(12); // 12 users per page
+        $users->appends(array_filter([
+            'search' => $this->search ?: null,
+            'filter' => $this->filter !== 'default' ? $this->filter : null,
+        ]));
 
         return view('pages.users.users-list', [
             'users' => $users,
+            'filter' => $this->filter,
         ]);
     }
 

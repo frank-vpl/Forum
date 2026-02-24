@@ -4,17 +4,42 @@
         <p class="text-gray-600 dark:text-gray-400">{{ $this->postId ? 'Update your post' : 'Share something with the community' }}</p>
     </div>
 
-    <form wire:submit.prevent="save" class="space-y-5">
+    <form
+        id="post-form"
+        wire:submit.prevent="save"
+        x-data="{ titleLocal: @js($title ?? ''), categoryLocal: @js($category ?? ''), contentLen: @js(mb_strlen($content ?? '')) }"
+        class="space-y-5"
+    >
         <div>
-            <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
-            <input dir="auto" type="text" wire:model.defer="title" class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="Enter a clear title">
-            @error('title') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            <flux:input
+                dir="auto"
+                wire:model.defer="title"
+                :label="__('Title')"
+                placeholder="Enter a clear title"
+                required
+                maxlength="60"
+                x-model="titleLocal"
+                x-on:input="titleLocal = ($event.target.value || '').slice(0, 60)"
+            />
+            <div class="mt-1 flex justify-end">
+                <span class="text-xs text-zinc-500 dark:text-zinc-400" x-text="(titleLocal || '').length + '/60'"></span>
+            </div>
         </div>
 
         <div>
-            <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
-            <input dir="auto" type="text" wire:model.defer="category" class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="e.g. General, Help, Ideas">
-            @error('category') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            <flux:input
+                dir="auto"
+                wire:model.defer="category"
+                :label="__('Category')"
+                placeholder="e.g. General, Help, Ideas"
+                required
+                maxlength="20"
+                x-model="categoryLocal"
+                x-on:input="categoryLocal = ($event.target.value || '').slice(0, 20)"
+            />
+            <div class="mt-1 flex justify-end">
+                <span class="text-xs text-zinc-500 dark:text-zinc-400" x-text="(categoryLocal || '').length + '/20'"></span>
+            </div>
         </div>
 
         <div>
@@ -23,11 +48,28 @@
             <div wire:ignore>
                 <textarea dir="auto" id="markdown-editor"></textarea>
             </div>
-            @error('content') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            <div class="mt-1 flex justify-end">
+                <span id="content-count" class="text-xs text-zinc-500 dark:text-zinc-400" x-text="contentLen"></span>
+            </div>
         </div>
 
         <div class="flex items-center gap-3">
-            <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">{{ $this->postId ? 'Update' : 'Publish' }}</button>
+            <flux:button
+                id="post-submit"
+                variant="primary"
+                type="submit"
+                wire:loading.attr="disabled"
+                wire:target="save"
+            >
+                <span wire:loading.remove wire:target="save">{{ $this->postId ? 'Update' : 'Publish' }}</span>
+                <span wire:loading wire:target="save" class="inline-flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4 animate-spin" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" opacity="0.25"></circle>
+                        <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path>
+                    </svg>
+                    {{ $this->postId ? 'Updating…' : 'Publishing…' }}
+                </span>
+            </flux:button>
             <a href="{{ url('/dashboard') }}" class="text-gray-600 hover:underline dark:text-gray-300">Cancel</a>
         </div>
     </form>
@@ -43,6 +85,15 @@
         .editor-preview .emoji-flag, .editor-preview-side .emoji-flag { display: inline !important; height: 1em; width: auto; vertical-align: -0.2em; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; }
         .editor-preview strong, .editor-preview b, .editor-preview em, .editor-preview i,
         .editor-preview-side strong, .editor-preview-side b, .editor-preview-side em, .editor-preview-side i { unicode-bidi: plaintext; }
+        .editor-preview p, .editor-preview-side p,
+        .editor-preview li, .editor-preview-side li,
+        .editor-preview blockquote, .editor-preview-side blockquote,
+        .editor-preview h1, .editor-preview-side h1,
+        .editor-preview h2, .editor-preview-side h2,
+        .editor-preview h3, .editor-preview-side h3,
+        .editor-preview h4, .editor-preview-side h4,
+        .editor-preview h5, .editor-preview-side h5,
+        .editor-preview h6, .editor-preview-side h6 { unicode-bidi: plaintext; }
         /* Dark mode for CodeMirror editor */
         .dark .CodeMirror { background-color: #111827; color: #e5e7eb; border-color: #374151; }
         .dark .CodeMirror-cursor { border-left: 1px solid #e5e7eb; }
@@ -224,6 +275,14 @@
                                 if (!el.hasAttribute('dir')) {
                                     el.setAttribute('dir', detectDirFromTextLocal(el.textContent || ''));
                                 }
+                                if (el.innerHTML && /<br\s*\/?>/i.test(el.innerHTML)) {
+                                    const parts = el.innerHTML.split(/<br\s*\/?>/i);
+                                    const wrapped = parts.map(seg => {
+                                        const d = detectDirFromTextLocal(String(seg).replace(/<[^>]*>/g, ' '));
+                                        return `<span dir="${d}">${seg}</span>`;
+                                    }).join('<br>');
+                                    el.innerHTML = wrapped;
+                                }
                             });
                             tmp.querySelectorAll('table').forEach(t => {
                                 if (!t.hasAttribute('dir')) t.setAttribute('dir', detectDirFromTextLocal(t.textContent || ''));
@@ -260,13 +319,27 @@
                 // ensure Livewire model sees the initial value as touched
                 hidden.value = mde.value();
                 hidden.dispatchEvent(new Event('input', { bubbles: true }));
+                const cnt = document.getElementById('content-count');
+                if (cnt) cnt.textContent = String(mde.value()?.length ?? 0);
             }
             mde.codemirror.on('change', () => {
                 const hidden = document.getElementById('content-hidden');
                 if (!hidden) return;
                 hidden.value = mde.value();
                 hidden.dispatchEvent(new Event('input', { bubbles: true }));
+                const cnt = document.getElementById('content-count');
+                if (cnt) cnt.textContent = String(mde.value()?.length ?? 0);
             });
         }
+        document.addEventListener('livewire:load', () => {
+            if (window.Livewire && Livewire.hook) {
+                const reset = () => {
+                    const btn = document.getElementById('post-submit');
+                    if (btn) btn.disabled = false;
+                };
+                Livewire.hook('message.processed', reset);
+                Livewire.hook('message.failed', reset);
+            }
+        });
     </script>
 </div>

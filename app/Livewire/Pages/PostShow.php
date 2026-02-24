@@ -51,6 +51,10 @@ class PostShow extends Component
         if (config('auth.require_email_verification') && ! Auth::user()->hasVerifiedEmail()) {
             $path = route('forum.show', ['id' => $this->postId], absolute: false);
             $this->redirect(route('verification.notice', ['redirect' => ltrim($path, '/')]), navigate: true);
+
+            return;
+        }
+        if ($this->post && (Auth::user()->hasBlockedId($this->post->user_id) || Auth::user()->isBlockedById($this->post->user_id))) {
             return;
         }
 

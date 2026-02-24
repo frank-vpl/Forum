@@ -5,6 +5,38 @@
     </div>
 
     <!-- Search Bar -->
+    <div class="mb-4">
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+            <div class="inline-flex items-center gap-2 w-full">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Filter:</span>
+                <div class="hidden sm:block">
+                    <flux:radio.group variant="segmented" wire:model.live="filter">
+                        <flux:radio value="default">Default</flux:radio>
+                        <flux:radio value="latest">Latest</flux:radio>
+                        <flux:radio value="name">Name</flux:radio>
+                        <flux:radio value="verified">Verified</flux:radio>
+                        <flux:radio value="official">Official</flux:radio>
+                    </flux:radio.group>
+                </div>
+                <div class="sm:hidden">
+                    <flux:dropdown>
+                        <flux:button variant="primary" icon:trailing="chevron-down">
+                            {{ $filter === 'default' ? 'Default' : ($filter === 'latest' ? 'Latest' : ($filter === 'name' ? 'Name' : ($filter === 'verified' ? 'Verified' : 'Official'))) }}
+                        </flux:button>
+                        <flux:menu>
+                            <flux:menu.radio.group wire:model.live="filter">
+                                <flux:menu.radio value="default">Default</flux:menu.radio>
+                                <flux:menu.radio value="latest">Latest</flux:menu.radio>
+                                <flux:menu.radio value="name">Name</flux:menu.radio>
+                                <flux:menu.radio value="verified">Verified</flux:menu.radio>
+                                <flux:menu.radio value="official">Official</flux:menu.radio>
+                            </flux:menu.radio.group>
+                        </flux:menu>
+                    </flux:dropdown>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="mb-6 max-w-md">
         <div class="relative">
             <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">

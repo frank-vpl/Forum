@@ -43,6 +43,12 @@ class PostComments extends Component
         if (config('auth.require_email_verification') && ! Auth::user()->hasVerifiedEmail()) {
             $path = route('forum.show', ['id' => $this->postId], absolute: false);
             $this->redirect(route('verification.notice', ['redirect' => ltrim($path, '/')]), navigate: true);
+
+            return;
+        }
+
+        $postOwnerId = Post::whereKey($this->postId)->value('user_id');
+        if ($postOwnerId && (Auth::user()->hasBlockedId($postOwnerId) || Auth::user()->isBlockedById($postOwnerId))) {
             return;
         }
 
@@ -78,11 +84,19 @@ class PostComments extends Component
         if (config('auth.require_email_verification') && ! Auth::user()->hasVerifiedEmail()) {
             $path = route('forum.show', ['id' => $this->postId], absolute: false);
             $this->redirect(route('verification.notice', ['redirect' => ltrim($path, '/')]), navigate: true);
+
             return;
         }
 
         $parent = Comment::find($parentId);
         if (! $parent) {
+            return;
+        }
+
+        $postOwnerId = Post::whereKey($this->postId)->value('user_id');
+        $replyToUserId = $parent->user_id;
+        if (($postOwnerId && (Auth::user()->hasBlockedId($postOwnerId) || Auth::user()->isBlockedById($postOwnerId)))
+            || ($replyToUserId && (Auth::user()->hasBlockedId($replyToUserId) || Auth::user()->isBlockedById($replyToUserId)))) {
             return;
         }
 
@@ -162,6 +176,9 @@ class PostComments extends Component
 
     public function render()
     {
+        $postOwnerId = Post::whereKey($this->postId)->value('user_id');
+        $blockedInteractions = Auth::check() && $postOwnerId && (Auth::user()->hasBlockedId($postOwnerId) || Auth::user()->isBlockedById($postOwnerId));
+
         $query = Comment::with(['user'])
             ->where('post_id', $this->postId)
             ->whereNull('parent_id')
@@ -176,6 +193,8 @@ class PostComments extends Component
         return view('pages.forum.post-comments', [
             'roots' => $roots,
             'hasMore' => $hasMore,
+            'blockedInteractions' => $blockedInteractions,
+            'postOwnerId' => $postOwnerId,
         ]);
     }
 }

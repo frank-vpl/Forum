@@ -7,8 +7,8 @@ use App\Actions\Fortify\ResetUserPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
@@ -87,6 +87,7 @@ class FortifyServiceProvider extends ServiceProvider
             if (is_string($redirect) && $redirect !== '') {
                 $params['redirect'] = ltrim($redirect, '/');
             }
+
             return URL::temporarySignedRoute('verification.verify', now()->addMinutes(60), $params);
         });
     }

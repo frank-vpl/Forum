@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -13,7 +14,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, MustVerifyEmailTrait;
+    use HasFactory, MustVerifyEmailTrait, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'status',
         'profile_image',
         'post_filter',
+        'users_filter',
         'bio',
         'profile_url',
         'profile_link_title',
@@ -53,9 +55,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'pending_email_requested_at' => 'datetime',
             'password' => 'hashed',
             'profile_image' => 'string',
             'post_filter' => 'string',
+            'users_filter' => 'string',
             'bio' => 'string',
             'profile_url' => 'string',
             'profile_link_title' => 'string',
@@ -152,5 +156,25 @@ class User extends Authenticatable implements MustVerifyEmail
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    public function blocks(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_blocks', 'blocker_id', 'blocked_id')->withTimestamps();
+    }
+
+    public function blockedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_blocks', 'blocked_id', 'blocker_id')->withTimestamps();
+    }
+
+    public function hasBlockedId(int $userId): bool
+    {
+        return $this->blocks()->where('users.id', $userId)->exists();
+    }
+
+    public function isBlockedById(int $userId): bool
+    {
+        return $this->blockedBy()->where('users.id', $userId)->exists();
     }
 }

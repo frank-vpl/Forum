@@ -10,7 +10,7 @@
         @forelse($items as $n)
             @php($actor = $n->actor)
             <div class="flex items-start gap-4 py-3">
-                @php($isSystem = in_array($n->type, ['status_to_verified','status_to_user','status_to_banned','status_unbanned','status_to_admin','post_admin_edited','post_admin_deleted'], true))
+                @php($isSystem = in_array($n->type, ['status_to_verified','status_to_user','status_to_banned','status_unbanned','status_to_admin','post_admin_edited','post_admin_deleted','email_change_requested','email_changed','email_change_canceled','email_change_expired'], true))
                 @if($isSystem)
                     <img src="{{ asset('logo.svg') }}" alt="System" class="w-12 h-12 rounded-full object-contain border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
                 @elseif($actor?->profile_image_url)
@@ -66,6 +66,16 @@
                             @if(!$n->post && $n->post_id)
                                 <span class="text-gray-600 dark:text-gray-400">(Post #{{ $n->post_id }})</span>
                             @endif
+                        @elseif($n->type === 'email_change_requested')
+                            <span class="font-medium text-yellow-600 dark:text-yellow-400">Email change requested</span>
+                            <span class="text-gray-600 dark:text-gray-400">Please confirm via the link sent to your new email.</span>
+                        @elseif($n->type === 'email_changed')
+                            <span class="font-medium text-green-600 dark:text-green-400">Email address updated</span>
+                        @elseif($n->type === 'email_change_canceled')
+                            <span class="font-medium text-blue-600 dark:text-blue-400">Email change canceled</span>
+                        @elseif($n->type === 'email_change_expired')
+                            <span class="font-medium text-red-600 dark:text-red-400">Email change expired</span>
+                            <span class="text-gray-600 dark:text-gray-400">Your pending email change link has expired.</span>
                         @else
                             <span class="font-medium">activity</span>
                         @endif

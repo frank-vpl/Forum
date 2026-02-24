@@ -3,9 +3,9 @@
 namespace App\Livewire\Pages;
 
 use App\Models\Comment;
+use App\Models\Notification;
 use App\Models\Post;
 use App\Models\PostLike;
-use App\Models\Notification;
 use App\Models\PostView;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -37,11 +37,16 @@ class UserProfile extends Component
 
     public function render()
     {
-        $posts = Post::with('user')
+        $blockedBy = Auth::check() && Auth::user()->isBlockedById($this->userId);
+        $hasBlocked = Auth::check() && Auth::user()->hasBlockedId($this->userId);
+        $postsQuery = Post::with('user')
             ->withCount(['likes', 'views', 'comments'])
             ->where('user_id', $this->userId)
-            ->orderByDesc('created_at')
-            ->paginate(10);
+            ->orderByDesc('created_at');
+        if ($blockedBy || $hasBlocked) {
+            $postsQuery->whereRaw('1 = 0');
+        }
+        $posts = $postsQuery->paginate(10);
         $posts->withPath('/user/'.$this->userId);
 
         $likedPostIds = [];
@@ -60,6 +65,8 @@ class UserProfile extends Component
             'viewsTotal' => $this->viewsTotal,
             'commentsTotal' => $this->commentsTotal,
             'likedPostIds' => $likedPostIds,
+            'blockedBy' => $blockedBy,
+            'hasBlocked' => $hasBlocked,
         ]);
     }
 
@@ -72,11 +79,15 @@ class UserProfile extends Component
         if (config('auth.require_email_verification') && ! Auth::user()->hasVerifiedEmail()) {
             $path = route('forum.show', ['id' => $postId], absolute: false);
             $this->redirect(route('verification.notice', ['redirect' => ltrim($path, '/')]), navigate: true);
+
             return;
         }
 
         $post = Post::with('user')->find($postId);
         if (! $post || $post->user?->isBanned()) {
+            return;
+        }
+        if (Auth::check() && ($post->user_id) && (Auth::user()->hasBlockedId($post->user_id) || Auth::user()->isBlockedById($post->user_id))) {
             return;
         }
 

@@ -76,7 +76,7 @@
                                 <flux:menu.item
                                     variant="danger"
                                     icon="trash"
-                                    x-on:click="if(confirm('Delete this post? This cannot be undone.')){ const idEl=$el.closest('[wire\\:id]'); if(idEl){ window.Livewire.find(idEl.getAttribute('wire:id')).call('deletePost'); } }"
+                                    x-on:click="if (confirm('Delete this post? This cannot be undone.')) $wire.deletePost()"
                                 >
                                     Delete
                                 </flux:menu.item>

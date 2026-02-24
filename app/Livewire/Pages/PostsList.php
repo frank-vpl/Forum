@@ -4,6 +4,7 @@ namespace App\Livewire\Pages;
 
 use App\Models\Post;
 use App\Models\PostLike;
+use App\Models\PostView;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -75,6 +76,7 @@ class PostsList extends Component
 
     public function toggleLike(int $postId): void
     {
+        $this->recordUniqueViewFor($postId);
         if (! Auth::check()) {
             return;
         }
@@ -112,5 +114,31 @@ class PostsList extends Component
             }
         }
         // Livewire will re-render; counts and liked state refresh automatically
+    }
+
+    private function recordUniqueViewFor(int $postId): void
+    {
+        $userId = Auth::id();
+        $viewerHash = null;
+
+        if (! $userId) {
+            $ip = request()->ip() ?? '';
+            $ua = request()->userAgent() ?? '';
+            $viewerHash = hash('sha256', $ip.'|'.$ua);
+        }
+
+        if ($userId) {
+            PostView::firstOrCreate(
+                ['post_id' => $postId, 'user_id' => $userId],
+                ['viewer_hash' => null]
+            );
+        } else {
+            if ($viewerHash) {
+                PostView::firstOrCreate(
+                    ['post_id' => $postId, 'viewer_hash' => $viewerHash],
+                    ['user_id' => null]
+                );
+            }
+        }
     }
 }

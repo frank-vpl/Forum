@@ -142,7 +142,9 @@
                                 <flux:button icon:trailing="chevron-down" variant="outline" size="sm">Manage</flux:button>
                                 <flux:menu>
                                     <flux:menu.item icon="pencil-square" href="{{ route('profile.edit') }}" wire:navigate>Edit Profile</flux:menu.item>
+                                    <flux:menu.separator />
                                     <flux:menu.item icon="key" href="{{ route('user-password.edit') }}" wire:navigate>Edit Password</flux:menu.item>
+                                    <flux:menu.separator />
                                     <flux:menu.item icon="paint-brush" href="{{ route('appearance.edit') }}" wire:navigate>Appearance</flux:menu.item>
                                 </flux:menu>
                             </flux:dropdown>

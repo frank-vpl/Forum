@@ -74,6 +74,17 @@
                             <a href="{{ url('/user/'.$user->id) }}" wire:navigate class="font-semibold text-gray-900 dark:text-white text-lg mb-1 flex items-center justify-center gap-1">
                                 <span>{{ $user->name }}</span>
                             </a>
+                            @if(auth()->user()?->isAdmin())
+                                <div class="mt-1 mb-1 flex items-center justify-center">
+                                    <flux:button
+                                        icon="clipboard-document-list"
+                                        variant="outline"
+                                        size="xs"
+                                        x-on:click="navigator.clipboard.writeText('{{ $user->email }}').then(()=>alert('Email copied'))"
+                                        title="{{ __('Copy email') }}"
+                                    />
+                                </div>
+                            @endif
                             
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                 @if($user->status === 'admin')

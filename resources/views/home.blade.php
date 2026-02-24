@@ -109,9 +109,9 @@
                         </a>
                     @endguest
                 </div>
-                <div class="relative mx-auto mt-12 max-w-5xl rounded-2xl border border-zinc-200 bg-white shadow-md dark:border-zinc-700 dark:bg-zinc-800">
+                {{-- <div class="relative mx-auto mt-12 max-w-5xl rounded-2xl border border-zinc-200 bg-white shadow-md dark:border-zinc-700 dark:bg-zinc-800">
                     <img src="{{ asset('images/screenshot.png') }}" alt="App screenshot" class="w-full rounded-2xl">
-                </div>
+                </div> --}}
             </div>
             <div class="mx-auto mt-12 max-w-5xl">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-2xl border border-zinc-200 bg-white p-6 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-800">

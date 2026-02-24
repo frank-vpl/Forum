@@ -46,8 +46,8 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         @forelse($posts as $post)
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-lg">
-                <div class="p-5">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-lg h-full">
+                <div class="p-5 flex flex-col h-full">
                     <div class="flex items-center gap-3 mb-3">
                         @php $u = $post->user; @endphp
                         @if($u?->profile_image_url)
@@ -78,34 +78,42 @@
                     <a dir="auto" href="{{ url('/forum/'.$post->id) }}" class="block text-lg font-semibold text-gray-900 dark:text-white hover:underline mb-1">
                         {!! \App\Support\TextFilters::flagify(\Illuminate\Support\Str::limit($post->title, 60)) !!}
                     </a>
-                    <p dir="auto" class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                    <a dir="auto" href="{{ url('/forum/'.$post->id) }}" class="block text-sm text-gray-600 dark:text-gray-300 mb-4 hover:underline">
                         {!! \App\Support\TextFilters::flagify(\Illuminate\Support\Str::limit(strip_tags($post->content), 45)) !!}
-                    </p>
+                    </a>
 
-                    <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300">
-                        <div class="flex items-center gap-4">
+                    <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300 mt-auto">
+                        <div class="flex items-center gap-3">
                             @php($liked = in_array($post->id, $likedPostIds ?? []))
-                            <span class="inline-flex items-center gap-1 {{ $liked ? 'text-red-600' : '' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
+                            <button
+                                type="button"
+                                wire:click="toggleLike({{ $post->id }})"
+                                wire:loading.class="opacity-50"
+                                wire:target="toggleLike"
+                                class="inline-flex items-center gap-1 {{ $liked ? 'text-red-600' : 'hover:text-red-600' }}"
+                                title="{{ $liked ? 'Unlike' : 'Like' }}"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform" viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
                                 </svg>
                                 @format_count($post->likes_count)
-                            </span>
-                            <span class="inline-flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <a href="{{ url('/forum/'.$post->id) }}" class="inline-flex items-center gap-1 hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s4.5-7.5 9.75-7.5S21.75 12 21.75 12s-4.5 7.5-9.75 7.5S2.25 12 2.25 12z" />
                                     <circle cx="12" cy="12" r="3.25" />
                                 </svg>
                                 @format_count($post->views_count)
-                            </span>
-                            <span class="inline-flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            </a>
+                            <a href="{{ url('/forum/'.$post->id) }}" class="inline-flex items-center gap-1 hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h7M4 5h16a1 1 0 0 1 1 1v12l-3-3H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" />
                                 </svg>
                                 @format_count($post->comments_count)
-                            </span>
+                            </a>
                         </div>
-                        <a href="{{ url('/forum/'.$post->id) }}" class="inline-flex items-center gap-1 text-blue-600 hover:underline">Open</a>
                     </div>
                 </div>
             </div>

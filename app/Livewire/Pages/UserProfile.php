@@ -61,4 +61,27 @@ class UserProfile extends Component
             'likedPostIds' => $likedPostIds,
         ]);
     }
+
+    public function toggleLike(int $postId): void
+    {
+        if (! Auth::check()) {
+            return;
+        }
+        if (config('auth.require_email_verification') && ! Auth::user()->hasVerifiedEmail()) {
+            $this->redirect(
+                route('verification.notice', ['redirect' => ltrim(route('forum.show', ['id' => $postId], absolute: false), '/')]),
+                navigate: true
+            );
+            return;
+        }
+
+        $like = PostLike::where('post_id', $postId)->where('user_id', Auth::id())->first();
+        if ($like) {
+            $like->delete();
+        } else {
+            PostLike::create(['post_id' => $postId, 'user_id' => Auth::id()]);
+        }
+
+        $this->resetPage();
+    }
 }

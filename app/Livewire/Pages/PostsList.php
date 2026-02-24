@@ -4,6 +4,7 @@ namespace App\Livewire\Pages;
 
 use App\Models\Post;
 use App\Models\PostLike;
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -70,5 +71,46 @@ class PostsList extends Component
             'likedPostIds' => $likedPostIds,
             'filter' => $this->filter,
         ]);
+    }
+
+    public function toggleLike(int $postId): void
+    {
+        if (! Auth::check()) {
+            return;
+        }
+        if (config('auth.require_email_verification') && ! Auth::user()->hasVerifiedEmail()) {
+            $path = route('forum.show', ['id' => $postId], absolute: false);
+            $this->redirect(route('verification.notice', ['redirect' => ltrim($path, '/')]), navigate: true);
+            return;
+        }
+
+        $post = Post::with('user')->find($postId);
+        if (! $post || $post->user?->isBanned()) {
+            return;
+        }
+
+        $existing = PostLike::where('post_id', $postId)->where('user_id', Auth::id())->first();
+        if ($existing) {
+            $existing->delete();
+            Notification::where('type', 'post_like')
+                ->where('post_id', $postId)
+                ->where('actor_id', Auth::id())
+                ->where('user_id', $post->user_id)
+                ->delete();
+        } else {
+            PostLike::create([
+                'post_id' => $postId,
+                'user_id' => Auth::id(),
+            ]);
+            if ($post->user_id !== Auth::id()) {
+                Notification::create([
+                    'user_id' => $post->user_id,
+                    'actor_id' => Auth::id(),
+                    'type' => 'post_like',
+                    'post_id' => $postId,
+                ]);
+            }
+        }
+        // Livewire will re-render; counts and liked state refresh automatically
     }
 }

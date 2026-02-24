@@ -89,6 +89,14 @@ new class extends Component {
 
     <x-pages::settings.layout :heading="__('Profile')" :subheading="__('Update your profile information')">
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
+            <div class="border-b pb-6 border-gray-200 dark:border-gray-700">
+                <flux:heading size="md">{{ __('Profile Image') }}</flux:heading>
+                <flux:text variant="subtle">{{ __('Manage your avatar') }}</flux:text>
+                <div class="mt-4">
+                    <livewire:components.profile-image-upload />
+                </div>
+            </div>
+            
             <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
 
             <div>
@@ -142,15 +150,6 @@ new class extends Component {
                 </div>
             </div>
 
-            <!-- Profile Image Section -->
-            @php
-                $user = auth()->user();
-            @endphp
-            
-            <div class="border-t pt-6 border-gray-200 dark:border-gray-700">
-                <flux:label>{{ __('Profile Image') }}</flux:label>
-                <livewire:components.profile-image-upload />
-            </div>
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">

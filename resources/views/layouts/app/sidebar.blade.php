@@ -37,20 +37,17 @@
                             <span class="ms-2 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-[10px] px-1.5 min-w-[18px] h-[18px]">{{ $notifCount >= 100 ? '+99' : $notifCount }}</span>
                         @endif
                     </flux:sidebar.item>
-                                        <flux:sidebar.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>
-                        {{ __('Users') }}
-                    </flux:sidebar.item>
-                    <flux:sidebar.item icon="star" :href="route('premium.index')" :current="request()->routeIs('premium.index')" wire:navigate>
-                        {{ __('Premium') }}
-                    </flux:sidebar.item>
                     @else
                     <flux:sidebar.item icon="bell" :href="route('login', ['redirect' => ltrim(route('notifications.index', absolute: false), '/')])" wire:navigate>
                         {{ __('Notifications') }}
                     </flux:sidebar.item>
-                    <flux:sidebar.item icon="star" :href="route('premium.index')" wire:navigate class="rounded-md bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100">
+                    @endauth
+                    <flux:sidebar.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>
+                        {{ __('Users') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="star" :href="route('premium.index')" wire:navigate>
                         {{ __('Premium') }}
                     </flux:sidebar.item>
-                    @endauth
                     <div class="px-3 pt-3">
                         <div class="mb-1 text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
                             {{ __('Appearance') }}

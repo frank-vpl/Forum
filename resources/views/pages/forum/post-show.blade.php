@@ -4,34 +4,8 @@
         <div class="mb-6 relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <div class="absolute inset-0 pointer-events-none opacity-60 dark:opacity-40" style="background: radial-gradient(1200px 200px at 10% 0%, rgba(59,130,246,0.08), transparent), radial-gradient(1000px 200px at 90% 0%, rgba(168,85,247,0.08), transparent);"></div>
             <div class="relative p-6 md:p-8">
-                <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <h1 dir="auto" class="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ $post->title }}</h1>
-                    <div class="flex items-center gap-2 md:mt-1 shrink-0">
-                        @auth
-                            @if(auth()->check() && (auth()->id() === ($u?->id) || auth()->user()->isAdmin()))
-                                <a href="{{ url('/new?id='.$post->id) }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3.5 py-2 text-white text-sm hover:bg-blue-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a1.5 1.5 0 0 1 2.121 2.121l-9.9 9.9L6 16l.492-3.083 10.37-9.43zM19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h6" />
-                                    </svg>
-                                    Edit
-                                </a>
-                                <button type="button" class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-3.5 py-2 text-white text-sm hover:bg-red-700"
-                                    onclick="if(confirm('Delete this post? This cannot be undone.')){ const idEl=this.closest('[wire\\:id]'); if(idEl){ window.Livewire.find(idEl.getAttribute('wire:id')).call('deletePost'); } }">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M9 7v10m6-10v10M4 7l1 12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2l1-12M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-                                    </svg>
-                                    Delete
-                                </button>
-                            @endif
-                        @endauth
-                        <button type="button" class="inline-flex items-center gap-1 rounded-lg border border-gray-300 dark:border-gray-700 px-2.5 py-1 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                            onclick="const u=`${location.origin}/forum/{{ $post->id }}`; navigator.clipboard.writeText(u).then(()=>{ this.dataset.label=this.innerText; this.innerText='Copied'; setTimeout(()=>{ this.innerText=this.dataset.label||'Copy link'; },1500); });">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6h2.25A2.25 2.25 0 0 1 18 8.25v7.5A2.25 2.25 0 0 1 15.75 18h-2.25M10.5 6H8.25A2.25 2.25 0 0 0 6 8.25v7.5A2.25 2.25 0 0 0 8.25 18h2.25M8.25 12h7.5" />
-                            </svg>
-                            Copy link
-                        </button>
-                    </div>
+                <div class="flex flex-col gap-3">
+                    <h1 dir="auto" class="w-full max-w-full break-words whitespace-normal text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ $post->title }}</h1>
                 </div>
                 <div class="mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div class="flex items-center gap-3">
@@ -91,6 +65,52 @@
                             {{ $this->formatCount($commentsCount) }}
                         </span>
                     </div>
+                </div>
+                <div class="mt-3 flex items-center gap-2">
+                    @if(auth()->check() && (auth()->id() === ($u?->id) || auth()->user()->isAdmin()))
+                        <flux:dropdown>
+                            <flux:button icon:trailing="chevron-down" variant="outline" size="sm">Manage</flux:button>
+                            <flux:menu>
+                                <flux:menu.item icon="pencil-square" href="{{ url('/new?id='.$post->id) }}">Edit</flux:menu.item>
+                                <flux:menu.separator />
+                                <flux:menu.item
+                                    variant="danger"
+                                    icon="trash"
+                                    x-on:click="if(confirm('Delete this post? This cannot be undone.')){ const idEl=$el.closest('[wire\\:id]'); if(idEl){ window.Livewire.find(idEl.getAttribute('wire:id')).call('deletePost'); } }"
+                                >
+                                    Delete
+                                </flux:menu.item>
+                            </flux:menu>
+                        </flux:dropdown>
+                        <flux:button
+                            icon="clipboard-document-list"
+                            variant="outline"
+                            size="sm"
+                            x-on:click="const u=`${location.origin}/forum/{{ $post->id }}`; navigator.clipboard.writeText(u).then(()=>alert('Link copied'))"
+                            title="{{ __('Copy link') }}"
+                        >
+                            {{ __('Copy Link') }}
+                        </flux:button>
+                    @else
+                        <flux:button
+                            icon="flag"
+                            variant="outline"
+                            size="sm"
+                            x-on:click="alert('Report coming soon')"
+                            title="{{ __('Report') }}"
+                        >
+                            {{ __('Report') }}
+                        </flux:button>
+                        <flux:button
+                            icon="clipboard-document-list"
+                            variant="outline"
+                            size="sm"
+                            x-on:click="const u=`${location.origin}/forum/{{ $post->id }}`; navigator.clipboard.writeText(u).then(()=>alert('Link copied'))"
+                            title="{{ __('Copy link') }}"
+                        >
+                            {{ __('Copy Link') }}
+                        </flux:button>
+                    @endif
                 </div>
                 
             </div>

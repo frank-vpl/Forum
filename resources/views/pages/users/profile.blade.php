@@ -39,46 +39,58 @@
             @endif
 
             @if(!$user->isBanned())
-            <div class="mt-3 grid grid-cols-2 gap-3 w-full max-w-md">
+            <div class="mt-3 flex items-center gap-2">
                 @auth
                     @if(auth()->id() === $user->id)
-                        <a href="{{ route('profile.edit') }}" class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a1.5 1.5 0 0 1 2.121 2.121l-9.9 9.9L6 16l.492-3.083 10.37-9.43zM19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h6" />
-                            </svg>
-                            Edit
-                        </a>
-                        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-800 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
-                            onclick="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>{ this.dataset.label=this.innerText; this.innerText='Copied'; setTimeout(()=>{ this.innerText=this.dataset.label||'Copy link'; },1500); });">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6h2.25A2.25 2.25 0 0 1 18 8.25v7.5A2.25 2.25 0 0 1 15.75 18h-2.25M10.5 6H8.25A2.25 2.25 0 0 0 6 8.25v7.5A2.25 2.25 0 0 0 8.25 18h2.25M8.25 12h7.5" />
-                            </svg>
-                            Copy link
-                        </button>
+                        <flux:dropdown>
+                            <flux:button icon:trailing="chevron-down" variant="outline" size="sm">Manage</flux:button>
+                            <flux:menu>
+                                <flux:menu.item icon="pencil-square" href="{{ route('profile.edit') }}" wire:navigate>Edit Profile</flux:menu.item>
+                                <flux:menu.separator />
+                                <flux:menu.item icon="key" href="{{ route('user-password.edit') }}" wire:navigate>Edit Password</flux:menu.item>
+                                <flux:menu.separator />
+                                <flux:menu.item icon="paint-brush" href="{{ route('appearance.edit') }}" wire:navigate>Appearance</flux:menu.item>
+                            </flux:menu>
+                        </flux:dropdown>
+                        <flux:button
+                            icon="clipboard-document-list"
+                            variant="outline"
+                            size="sm"
+                            x-on:click="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>alert('Link copied'))"
+                            title="{{ __('Copy link') }}"
+                        >
+                            {{ __('Copy Link') }}
+                        </flux:button>
                     @else
-                        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                            onclick="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>{ this.dataset.label=this.innerText; this.innerText='Copied'; setTimeout(()=>{ this.innerText=this.dataset.label||'Copy Link'; },1500); });">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6h2.25A2.25 2.25 0 0 1 18 8.25v7.5A2.25 2.25 0 0 1 15.75 18h-2.25M10.5 6H8.25A2.25 2.25 0 0 0 6 8.25v7.5A2.25 2.25 0 0 0 8.25 18h2.25M8.25 12h7.5" />
-                            </svg>
-                            Copy Link
-                        </button>
-                        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300"
-                            onclick="alert('Coming Soon...');">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86l-7.38 12.78A2 2 0 0 0 4.53 20h14.94a2 2 0 0 0 1.73-3.36L13.82 3.86a2 2 0 0 0-3.53 0z" />
-                            </svg>
-                            Report
-                        </button>
+                        <flux:button
+                            icon="flag"
+                            variant="outline"
+                            size="sm"
+                            x-on:click="alert('Report coming soon')"
+                            title="{{ __('Report') }}"
+                        >
+                            {{ __('Report') }}
+                        </flux:button>
+                        <flux:button
+                            icon="clipboard-document-list"
+                            variant="outline"
+                            size="sm"
+                            x-on:click="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>alert('Link copied'))"
+                            title="{{ __('Copy link') }}"
+                        >
+                            {{ __('Copy Link') }}
+                        </flux:button>
                     @endif
                 @else
-                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                        onclick="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>{ this.dataset.label=this.innerText; this.innerText='Copied'; setTimeout(()=>{ this.innerText=this.dataset.label||'Copy Link'; },1500); });">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6h2.25A2.25 2.25 0 0 1 18 8.25v7.5A2.25 2.25 0 0 1 15.75 18h-2.25M10.5 6H8.25A2.25 2.25 0 0 0 6 8.25v7.5A2.25 2.25 0 0 0 8.25 18h2.25M8.25 12h7.5" />
-                        </svg>
-                        Copy Link
-                    </button>
+                    <flux:button
+                        icon="clipboard-document-list"
+                        variant="outline"
+                        size="sm"
+                        x-on:click="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>alert('Link copied'))"
+                        title="{{ __('Copy link') }}"
+                    >
+                        {{ __('Copy Link') }}
+                    </flux:button>
                     <a href="{{ route('login', ['redirect' => ltrim(url()->current(), '/')]) }}" class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86l-7.38 12.78A2 2 0 0 0 4.53 20h14.94a2 2 0 0 0 1.73-3.36L13.82 3.86a2 2 0 0 0-3.53 0z" />
@@ -123,46 +135,56 @@
                     </a>
                 @endif
                 @if(!$user->isBanned())
-                <div class="mt-3 grid grid-cols-2 gap-2">
+                <div class="mt-3 flex items-center gap-2">
                     @auth
                         @if(auth()->id() === $user->id)
-                            <a href="{{ route('profile.edit') }}" class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-white hover:bg-blue-700 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a1.5 1.5 0 0 1 2.121 2.121l-9.9 9.9L6 16l.492-3.083 10.37-9.43zM19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h6" />
-                                </svg>
-                                Edit
-                            </a>
-                            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-800 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 text-sm"
-                                onclick="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>{ this.dataset.label=this.innerText; this.innerText='Copied'; setTimeout(()=>{ this.innerText=this.dataset.label||'Copy link'; },1500); });">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6h2.25A2.25 2.25 0 0 1 18 8.25v7.5A2.25 2.25 0 0 1 15.75 18h-2.25M10.5 6H8.25A2.25 2.25 0 0 0 6 8.25v7.5A2.25 2.25 0 0 0 8.25 18h2.25M8.25 12h7.5" />
-                                </svg>
-                                Copy link
-                            </button>
+                            <flux:dropdown>
+                                <flux:button icon:trailing="chevron-down" variant="outline" size="sm">Manage</flux:button>
+                                <flux:menu>
+                                    <flux:menu.item icon="pencil-square" href="{{ route('profile.edit') }}" wire:navigate>Edit Profile</flux:menu.item>
+                                    <flux:menu.item icon="key" href="{{ route('user-password.edit') }}" wire:navigate>Edit Password</flux:menu.item>
+                                    <flux:menu.item icon="paint-brush" href="{{ route('appearance.edit') }}" wire:navigate>Appearance</flux:menu.item>
+                                </flux:menu>
+                            </flux:dropdown>
+                            <flux:button
+                                icon="clipboard-document-list"
+                                variant="outline"
+                                size="sm"
+                                x-on:click="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>alert('Link copied'))"
+                                title="{{ __('Copy link') }}"
+                            >
+                                {{ __('Copy Link') }}
+                            </flux:button>
                         @else
-                            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-white hover:bg-blue-700 text-sm"
-                                onclick="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>{ this.dataset.label=this.innerText; this.innerText='Copied'; setTimeout(()=>{ this.innerText=this.dataset.label||'Copy Link'; },1500); });">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6h2.25A2.25 2.25 0 0 1 18 8.25v7.5A2.25 2.25 0 0 1 15.75 18h-2.25M10.5 6H8.25A2.25 2.25 0 0 0 6 8.25v7.5A2.25 2.25 0 0 0 8.25 18h2.25M8.25 12h7.5" />
-                                </svg>
-                                Copy Link
-                            </button>
-                            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300 text-sm"
-                                onclick="alert('Coming Soon...');">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86l-7.38 12.78A2 2 0 0 0 4.53 20h14.94a2 2 0 0 0 1.73-3.36L13.82 3.86a2 2 0 0 0-3.53 0z" />
-                                </svg>
-                                Report
-                            </button>
+                            <flux:button
+                                icon="flag"
+                                variant="outline"
+                                size="sm"
+                                x-on:click="alert('Report coming soon')"
+                                title="{{ __('Report') }}"
+                            >
+                                {{ __('Report') }}
+                            </flux:button>
+                            <flux:button
+                                icon="clipboard-document-list"
+                                variant="outline"
+                                size="sm"
+                                x-on:click="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>alert('Link copied'))"
+                                title="{{ __('Copy link') }}"
+                            >
+                                {{ __('Copy Link') }}
+                            </flux:button>
                         @endif
                     @else
-                        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-white hover:bg-blue-700 text-sm"
-                            onclick="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>{ this.dataset.label=this.innerText; this.innerText='Copied'; setTimeout(()=>{ this.innerText=this.dataset.label||'Copy Link'; },1500); });">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6h2.25A2.25 2.25 0 0 1 18 8.25v7.5A2.25 2.25 0 0 1 15.75 18h-2.25M10.5 6H8.25A2.25 2.25 0 0 0 6 8.25v7.5A2.25 2.25 0 0 0 8.25 18h2.25M8.25 12h7.5" />
-                            </svg>
-                            Copy Link
-                        </button>
+                        <flux:button
+                            icon="clipboard-document-list"
+                            variant="outline"
+                            size="sm"
+                            x-on:click="const u=`${location.origin}/user/{{ $user->id }}`; navigator.clipboard.writeText(u).then(()=>alert('Link copied'))"
+                            title="{{ __('Copy link') }}"
+                        >
+                            {{ __('Copy Link') }}
+                        </flux:button>
                         <a href="{{ route('login', ['redirect' => ltrim(url()->current(), '/')]) }}" class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300 text-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86l-7.38 12.78A2 2 0 0 0 4.53 20h14.94a2 2 0 0 0 1.73-3.36L13.82 3.86a2 2 0 0 0-3.53 0z" />
@@ -183,8 +205,8 @@
     @else
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         @forelse($posts as $post)
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-lg">
-                <div class="p-5">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-lg h-full">
+                <div class="p-5 flex flex-col h-full">
                     <div class="flex items-center gap-3 mb-3">
                         @php $u = $post->user; @endphp
                         @if($u?->profile_image_url)
@@ -201,7 +223,7 @@
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-1">
                                 <a href="{{ url('/user/'.($u->id ?? '')) }}" wire:navigate class="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                    {{ $u?->name ?? 'Unknown' }}
+                                    {!! \App\Support\TextFilters::flagify($u?->name ?? 'Unknown') !!}
                                 </a>
                                 @if($u?->getBadgeIconPath())
                                     <img src="{{ $u->getBadgeIconPath() }}" alt="{{ $u->getBadgeTooltip() }}" class="w-4 h-4" title="{{ $u->getBadgeTooltip() }}">
@@ -213,36 +235,44 @@
                     </div>
 
                     <a dir="auto" href="{{ url('/forum/'.$post->id) }}" class="block text-lg font-semibold text-gray-900 dark:text-white hover:underline mb-1">
-                        {{ \Illuminate\Support\Str::limit($post->title, 60) }}
+                        {!! \App\Support\TextFilters::flagify(\Illuminate\Support\Str::limit($post->title, 60)) !!}
                     </a>
-                    <p dir="auto" class="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                        {{ \Illuminate\Support\Str::limit(strip_tags($post->content), 45) }}
-                    </p>
+                    <a dir="auto" href="{{ url('/forum/'.$post->id) }}" class="block text-sm text-gray-600 dark:text-gray-300 mb-4 hover:underline">
+                        {!! \App\Support\TextFilters::flagify(\Illuminate\Support\Str::limit(strip_tags($post->content), 45)) !!}
+                    </a>
 
-                    <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300">
-                        <div class="flex items-center gap-4">
+                    <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300 mt-auto">
+                        <div class="flex items-center gap-3">
                             @php($liked = in_array($post->id, $likedPostIds ?? []))
-                            <span class="inline-flex items-center gap-1 {{ $liked ? 'text-red-600' : '' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
+                            <button
+                                type="button"
+                                wire:click="toggleLike({{ $post->id }})"
+                                wire:loading.class="opacity-50"
+                                wire:target="toggleLike"
+                                class="inline-flex items-center gap-1 {{ $liked ? 'text-red-600' : 'hover:text-red-600' }}"
+                                title="{{ $liked ? 'Unlike' : 'Like' }}"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform" viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-3-9-6.5-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4.5 8-9 11z" />
                                 </svg>
                                 @format_count($post->likes_count)
-                            </span>
-                            <span class="inline-flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <a href="{{ url('/forum/'.$post->id) }}" class="inline-flex items-center gap-1 hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s4.5-7.5 9.75-7.5S21.75 12 21.75 12s-4.5 7.5-9.75 7.5S2.25 12 2.25 12z" />
                                     <circle cx="12" cy="12" r="3.25" />
                                 </svg>
                                 @format_count($post->views_count)
-                            </span>
-                            <span class="inline-flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            </a>
+                            <a href="{{ url('/forum/'.$post->id) }}" class="inline-flex items-center gap-1 hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h7M4 5h16a1 1 0 0 1 1 1v12l-3-3H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" />
                                 </svg>
                                 @format_count($post->comments_count)
-                            </span>
+                            </a>
                         </div>
-                        <a href="{{ url('/forum/'.$post->id) }}" class="inline-flex items-center gap-1 text-blue-600 hover:underline">Open</a>
                     </div>
                 </div>
             </div>

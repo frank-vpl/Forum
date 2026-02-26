@@ -12,7 +12,7 @@
             <div class="flex items-start gap-4 py-3">
                 @php($isSystem = in_array($n->type, ['status_to_verified','status_to_user','status_to_banned','status_unbanned','status_to_admin','post_admin_edited','post_admin_deleted','email_change_requested','email_changed','email_change_canceled','email_change_expired'], true))
                 @if($isSystem)
-                    <img src="{{ asset('logo.svg') }}" alt="System" class="w-12 h-12 rounded-full object-contain border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
+                    <img src="{{ asset('iranguard.png') }}" alt="System" class="w-12 rounded-full object-contain border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
                 @elseif($actor?->profile_image_url)
                     <a href="{{ route('user.show', ['id' => $actor->id]) }}" wire:navigate>
                         <img src="{{ $actor->profile_image_url }}" alt="{{ $actor->name }}" class="w-12 h-12 rounded-full object-cover border border-gray-200 dark:border-gray-700">
@@ -25,7 +25,7 @@
                             </div>
                         </a>
                     @else
-                        <img src="{{ asset('logo.svg') }}" alt="System" class="w-12 h-12 rounded-full object-contain border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
+                        <img src="{{ asset('iranguard.png') }}" alt="System" class="w-12 rounded-full object-contain border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
                     @endif
                 @endif
                 <div class="flex-1">

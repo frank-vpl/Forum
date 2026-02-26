@@ -7,7 +7,7 @@
                     <div class="flex items-center justify-between rounded-full border border-zinc-200 bg-white/80 px-4 py-2 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-zinc-700 dark:bg-zinc-900/60">
                         <div class="flex items-center gap-2">
                             <a href="{{ route('home') }}" class="flex items-center gap-2">
-                                <img src="{{ asset('logo.svg') }}" alt="{{ config('app.name') }}" class="h-7 w-auto dark:brightness-90">
+                                <img src="{{ asset('iranguard.png') }}" alt="{{ config('app.name') }}" class="w-8 dark:brightness-90">
                                 <span class="sr-only">{{ config('app.name') }}</span>
                             </a>
                             <div class="relative" x-data>
@@ -491,7 +491,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
                         <div>
                             <div class="flex items-center gap-2">
-                                <img src="{{ asset('logo.svg') }}" alt="{{ config('app.name') }}" class="h-6 w-auto dark:brightness-90">
+                                <img src="{{ asset('iranguard.png') }}" alt="{{ config('app.name') }}" class="w-8 dark:brightness-90">
                                 <span class="font-semibold text-zinc-900 dark:text-white">{{ config('app.name') }}</span>
                             </div>
                             <p class="mt-3 text-zinc-600 dark:text-zinc-300">
